@@ -30,6 +30,14 @@
     --font-mono: 'IBM Plex Mono', monospace;
 
     --container: 1240px;
+    /* --pad is the simple side padding .container (and anything centered
+       the same way) uses. --edge is that same padding PLUS the centering
+       offset .container gets "for free" from its own max-width — it's what
+       a position:fixed element (like nav, which has no max-width of its
+       own to center it) needs instead, so it still lands on the exact same
+       content column as everything inside .container. */
+    --pad: 32px;
+    --edge: max(var(--pad), calc((100vw - var(--container)) / 2 + var(--pad)));
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior:smooth; }
@@ -41,8 +49,13 @@
   }
   img { max-width:100%; display:block; }
   a { color:inherit; }
-  .container { max-width: var(--container); margin:0 auto; padding:0 32px; }
-  @media (max-width:640px){ .container{ padding:0 20px; } }
+  .container { max-width: var(--container); margin:0 auto; padding:0 var(--pad); }
+  /* --edge steps down at the same breakpoints .container's layout already
+     bends at, so the nav (and anything else reading --edge) never drifts
+     out of line with the grid every section below it uses. */
+  @media (max-width:960px){ :root{ --pad:30px; } }
+  @media (max-width:760px){ :root{ --pad:20px; } }
+  @media (max-width:380px){ :root{ --pad:16px; } }
 
   h1,h2,h3 { font-family: var(--font-display); font-weight:600; line-height:1.08; letter-spacing:-0.01em; }
   .eyebrow {
@@ -59,21 +72,23 @@
 
   /* ================= NAV ================= */
   nav {
-    position: fixed; top:0; left:0; right:0; z-index:200;
+    position: fixed; top:18px; left:var(--edge); right:var(--edge); z-index:200;
     display:flex; align-items:center; justify-content:space-between;
-    padding: 20px 40px;
-    background: rgba(13,22,13,0.2);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    transition: background 0.35s ease, padding 0.35s ease;
+    padding: 14px 30px; border-radius:999px;
+    background: rgba(24,34,22,0.3);
+    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 30px rgba(0,0,0,0.18);
+    transition: background 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, top 0.35s ease;
   }
-  nav.compact { padding: 12px 40px; background: rgba(13,22,13,0.82); box-shadow: 0 4px 24px rgba(0,0,0,0.2); }
+  nav.compact {
+    padding: 10px 26px; background: rgba(15,24,15,0.6);
+    backdrop-filter: blur(24px) saturate(190%); -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border-color: rgba(255,255,255,0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 12px 34px rgba(0,0,0,0.26);
+  }
   .logo { display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none; }
-  .logo-mark {
-    width:34px; height:34px; border-radius:50%;
-    border:1.5px solid rgba(255,255,255,0.85);
-    display:flex; align-items:center; justify-content:center;
-    font-family: var(--font-display); font-weight:600; font-size:15px; color:#fff;
-  }
+  .logo-mark { height:36px; width:auto; display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.35)); }
   .logo-word { font-family: var(--font-display); font-weight:600; font-size:19px; letter-spacing:0.03em; color:#fff; }
   .nav-links { display:flex; gap:32px; list-style:none; }
   .nav-links a { color:#fff; text-decoration:none; font-size:14px; font-weight:500; opacity:0.82; transition:opacity 0.2s; }
@@ -86,7 +101,7 @@
   .lang-switch button.active { background:#fff; color: var(--forest-900); opacity:1; font-weight:600; }
   .nav-burger { display:none; }
   @media (max-width: 760px) {
-    nav { padding: 14px 18px; }
+    nav { top:12px; padding: 14px 18px; }
     nav.compact { padding: 10px 18px; }
     .nav-links { display:none; }
   }
@@ -109,7 +124,7 @@
   }
 
   .hero-text {
-    position:absolute; right:14%; top:50%; transform:translateY(-52%);
+    position:absolute; right:var(--edge); top:50%; transform:translateY(-52%);
     color:#fff; max-width: 500px; z-index:5; text-align:left;
     opacity:0; filter: blur(6px);
     transition: opacity 1.3s cubic-bezier(.16,1,.3,1), transform 1.3s cubic-bezier(.16,1,.3,1), filter 1.3s ease;
@@ -191,7 +206,7 @@
 
   .history-container {
     position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-    width:100%; max-width:1240px; padding:0 32px; box-sizing:border-box;
+    width:100%; max-width:var(--container); padding:0 var(--pad); box-sizing:border-box;
     transition: opacity 0.2s linear;
   }
 
@@ -251,6 +266,7 @@
     position:relative; z-index:1;
     font-family: var(--font-mono); font-size:12.5px; letter-spacing:0.14em; color:rgba(255,255,255,0.7);
     margin-bottom:18px; text-shadow: 0 1px 10px rgba(0,0,0,0.6);
+    transition: opacity 0.42s ease;
   }
   .product-bottle-wrap { position:relative; display:inline-block; z-index:1; }
   .product-bottle-wrap::before {
@@ -264,7 +280,7 @@
     position:relative; height:38vh; max-height:400px; width:auto; margin:0 auto; display:block;
     filter: brightness(0.94) saturate(1.15) sepia(0.3) hue-rotate(-8deg) contrast(1.05) drop-shadow(0 20px 26px rgba(0,0,0,0.55));
     -webkit-box-reflect: below 3px linear-gradient(transparent 60%, rgba(255,255,255,0.16));
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.42s ease, transform 0.42s ease;
   }
 
   /* Product info (right): eyebrow + headline + description */
@@ -273,18 +289,19 @@
     position:relative; z-index:1;
     display:block; font-family: var(--font-mono); font-size:12px; letter-spacing:0.18em;
     color: var(--gold); margin-bottom:16px; text-transform:uppercase;
+    transition: opacity 0.42s ease;
   }
   .product-info h3 {
     position:relative; z-index:1;
     font-family: var(--font-display); font-weight:600; font-size: clamp(24px, 2.3vw, 34px); line-height:1.28;
     color: var(--gold); margin-bottom:16px; text-shadow: 0 2px 20px rgba(0,0,0,0.6);
-    transition: opacity 0.35s ease;
+    transition: opacity 0.42s ease;
   }
   .product-info p {
     position:relative; z-index:1;
     font-size: clamp(14px, 1.05vw, 16px); line-height:1.65; color:rgba(255,255,255,0.8);
     text-shadow: 0 1px 12px rgba(0,0,0,0.6);
-    transition: opacity 0.35s ease;
+    transition: opacity 0.42s ease;
   }
 
   /* Tabs / pagination row */
@@ -309,9 +326,17 @@
     display:inline-flex; align-items:center; justify-content:center; transition: background 0.2s ease;
   }
   .tab-arrow:hover { background: rgba(212,162,76,0.15); }
+  /* After the last preview, the arrow itself becomes the invite to the full catalog */
+  .tab-arrow.tab-arrow-cta {
+    width:auto; height:auto; border-radius:999px; padding:8px 16px 8px 18px; gap:6px;
+    font-family: var(--font-body); font-size:12.5px; font-weight:600; white-space:nowrap;
+  }
+  .tab-arrow.tab-arrow-cta svg { width:13px; height:13px; transition: transform 0.2s ease; }
+  .tab-arrow.tab-arrow-cta:hover { background: var(--gold); color: var(--forest-950); }
+  .tab-arrow.tab-arrow-cta:hover svg { transform:translateX(2px); }
 
   .history-timeline {
-    position:absolute; left:0; right:0; bottom:9%;
+    position:absolute; left:var(--pad); right:var(--pad); bottom:9%;
     display:flex; align-items:center; gap:16px;
     font-family: var(--font-mono); font-size:13px; letter-spacing:0.06em; color:rgba(255,255,255,0.85);
   }
@@ -346,7 +371,7 @@
     .history-timeline { position:static; order:6; }
   }
 
-  .hero-bottles { position:absolute; z-index:4; left:11.5%; bottom:7%; perspective: 1400px; transition: transform 0.25s ease-out, opacity 1.1s cubic-bezier(.4,0,.2,1), filter 1.1s cubic-bezier(.4,0,.2,1); transform-style: preserve-3d; }
+  .hero-bottles { position:absolute; z-index:4; left:var(--edge); bottom:7%; perspective: 1400px; transition: transform 0.25s ease-out, opacity 1.1s cubic-bezier(.4,0,.2,1), filter 1.1s cubic-bezier(.4,0,.2,1); transform-style: preserve-3d; }
 
   /* ---- Ambient glow behind the glass panel ---- */
   .panel-glow {
@@ -451,7 +476,7 @@
 
 
   /* ================= SECTION SHARED ================= */
-  section { position:relative; scroll-margin-top: 84px; }
+  section { position:relative; scroll-margin-top: 96px; }
   .section-pad { padding: 120px 0; }
   @media (max-width:760px){ .section-pad{ padding:76px 0; } }
 
@@ -507,7 +532,7 @@
   .fc-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:26px; position:relative; }
   @media (max-width:1080px){ .fc-grid{ grid-template-columns:repeat(3,1fr); } }
   @media (max-width:760px){ .fc-grid{ grid-template-columns:repeat(2,1fr); gap:16px; } .fc-head{ flex-direction:column; align-items:flex-start; } .fc-search{ min-width:0; width:100%; } }
-  @media (max-width:480px){ .fc-grid{ grid-template-columns:1fr; } }
+  @media (max-width:480px){ .fc-grid{ gap:12px; } }
 
   .fc-card {
     --card-accent:rgba(201,111,58,.42); --card-glow:rgba(222,141,75,.10);
@@ -703,7 +728,7 @@
     /* Пять экранных состояний: вступление + четыре этапа. Высоты достаточно
        для считывания, но переход к следующему этапу наступает быстро. */
     .formula-journey { height:380vh; min-height:2100px; padding:0 !important; }
-    .formula-journey > .container { position:sticky; top:0; height:100vh; max-width:none; padding:0 clamp(28px,7vw,130px); display:block; }
+    .formula-journey > .container { position:sticky; top:0; height:100vh; max-width:none; padding:0 var(--edge); display:block; }
     .journey-shell { height:100%; grid-template-columns:clamp(130px,14vw,190px) minmax(0,1fr); gap:clamp(25px,4vw,74px); padding:clamp(42px,7vh,78px) 0; }
     .journey-rail { position:relative; top:auto; height:100%; min-height:0; padding-top:3px; }
     .journey-rail-kicker { margin-bottom:20px; }
@@ -843,6 +868,77 @@
 
   .empty-state { text-align:center; padding:80px 20px; color:var(--ink-soft); font-family:var(--font-mono); font-size:14px; }
 
+  /* ================= FAQ ================= */
+  .faq {
+    position:relative; overflow:clip; isolation:isolate;
+    background:
+      radial-gradient(40rem 28rem at 8% 46%, rgba(107,154,92,.13), transparent 66%),
+      radial-gradient(38rem 32rem at 100% 88%, rgba(227,142,76,.16), transparent 70%),
+      linear-gradient(180deg, #F1EEE5 0%, #F1EEE5 14%, #F6F2E9 50%, #ECE8DC 100%);
+  }
+  .faq::before {
+    /* big botanical branch, right side — kept clear of the top seam so the
+       section still opens on a flat, matching band before any decoration */
+    content:''; position:absolute; z-index:0; pointer-events:none; opacity:.15;
+    width:clamp(280px,32vw,480px); height:clamp(400px,46vw,700px);
+    right:clamp(-190px,-9vw,-90px); top:130px; transform:rotate(9deg);
+    background:url('assets/botanical-catalog-branch.png') center / contain no-repeat;
+  }
+  .faq::after {
+    content:''; position:absolute; z-index:0; pointer-events:none; opacity:.07;
+    width:clamp(180px,17vw,240px); height:clamp(260px,25vw,350px);
+    left:clamp(-150px,-8vw,-80px); bottom:-10px; transform:scaleX(-1) rotate(-8deg);
+    background:url('assets/botanical-catalog-branch.png') center / contain no-repeat;
+  }
+  .faq > .container { position:relative; z-index:1; }
+  .faq-grid { display:grid; grid-template-columns:minmax(220px,300px) minmax(0,1fr); gap:clamp(36px,5vw,72px); align-items:start; }
+  .faq-intro { position:sticky; top:112px; }
+  .faq-intro-glow {
+    position:absolute; z-index:-1; top:-46px; left:-40px; width:230px; height:230px; border-radius:50%;
+    background: radial-gradient(circle, rgba(212,162,76,.28) 0%, rgba(107,154,92,.14) 46%, transparent 74%);
+    filter: blur(30px); pointer-events:none;
+  }
+  .faq-intro h2 { font-size:clamp(28px,2.6vw,38px); color:var(--forest-900); margin-top:12px; line-height:1.12; }
+  .faq-intro p { margin-top:16px; font-size:15px; line-height:1.62; color:var(--ink-soft); }
+  .faq-list { display:flex; flex-direction:column; gap:14px; }
+  .faq-item {
+    --item-accent: rgba(201,111,58,.5);
+    position:relative; border:1px solid rgba(26,46,26,.12); border-radius:18px;
+    background:rgba(255,253,248,.66); overflow:hidden;
+    transition:border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .2s ease;
+  }
+  .faq-item::before {
+    content:''; position:absolute; inset:0 0 auto; height:3px; z-index:1; opacity:.75;
+    background:linear-gradient(90deg, transparent 6%, var(--item-accent) 48%, transparent 94%);
+  }
+  .faq-item:nth-child(3n+2) { --item-accent: rgba(213,149,69,.55); }
+  .faq-item:nth-child(3n) { --item-accent: rgba(107,154,92,.5); }
+  .faq-item:hover { transform:translateY(-2px); }
+  .faq-item.is-open { border-color:rgba(201,111,58,.4); background:rgba(255,253,248,.94); box-shadow:0 14px 30px rgba(44,51,33,.08); }
+  .faq-question {
+    position:relative; z-index:1; width:100%; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:18px;
+    padding:20px 24px; background:none; border:none; cursor:pointer; text-align:left;
+    font:600 15.5px var(--font-body); color:var(--forest-900); font-family:inherit;
+    transition:color .2s ease;
+  }
+  .faq-num { font:600 13px var(--font-mono); color:var(--item-accent); opacity:.85; letter-spacing:.02em; }
+  .faq-question:hover { color:var(--amber-deep); }
+  .faq-chevron { width:18px; height:18px; flex-shrink:0; color:var(--amber-deep); transition:transform .3s ease; }
+  .faq-item.is-open .faq-chevron { transform:rotate(180deg); }
+  .faq-answer { max-height:0; overflow:hidden; transition:max-height .35s cubic-bezier(.4,0,.2,1); }
+  .faq-answer p { padding:0 24px 20px 58px; font-size:14.5px; line-height:1.65; color:var(--ink-soft); }
+  @media (max-width:960px){
+    .faq-grid { grid-template-columns:1fr; gap:32px; }
+    .faq-intro { position:static; }
+  }
+  @media (max-width:760px){
+    .faq-grid { gap:24px; }
+    .faq-intro p { font-size:14px; }
+    .faq-question { padding:16px 18px; font-size:14.5px; gap:12px; }
+    .faq-num { font-size:11px; }
+    .faq-answer p { padding:0 18px 18px 18px; font-size:13.5px; }
+  }
+
   /* ================= FOOTER ================= */
   footer { background: var(--forest-950); color:rgba(255,255,255,0.6); padding:44px 0; }
   .footer-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
@@ -859,13 +955,20 @@
   button, input { font:inherit; }
 
   /* Compact desktops and horizontal tablets */
+  @media (min-width:1121px){
+    /* Keep the hero in two clear columns. Both sides are based on the viewport,
+       so text never crosses the product image while a desktop window narrows. */
+    .hero-text { right:var(--edge); width:min(31vw,500px); max-width:none; }
+    .hero-bottles { left:var(--edge); bottom:8%; }
+    .bottles-frame { width:min(46vw,72svh,720px); height:auto; max-width:none; aspect-ratio:1; }
+  }
   @media (min-width:961px) and (max-width:1120px){
     nav { padding-left:28px; padding-right:28px; }
     nav.compact { padding-left:28px; padding-right:28px; }
     .nav-links { gap:22px; }
-    .hero-text { right:7%; max-width:430px; }
-    .hero-bottles { left:5%; }
-    .bottles-frame { height:min(70vh,680px); width:min(62vw,calc(70vh * .93)); }
+    .hero-text { right:var(--edge); width:min(38vw,410px); max-width:none; }
+    .hero-bottles { left:var(--edge); }
+    .bottles-frame { width:min(43vw,66svh,620px); height:auto; max-width:none; aspect-ratio:1; }
     .history-container { padding-left:5vw; padding-right:5vw; }
     .history-left { max-width:400px; padding:28px 30px; }
     .product-showcase { left:40%; width:23%; }
@@ -881,14 +984,19 @@
      The scroll-scrub scene is reserved for screens that can comfortably hold
      its rail, text and production frame side by side. */
   @media (min-width:761px) and (max-width:960px){
-    .container { padding-left:30px; padding-right:30px; }
     nav { padding:16px 28px; }
     nav.compact { padding:11px 28px; }
     .nav-links { gap:18px; }
     .nav-links a { font-size:13px; }
-    .hero-text { right:6%; max-width:390px; }
-    .hero-bottles { left:4%; bottom:10%; }
-    .bottles-frame { height:min(63vh,600px); width:min(56vw,calc(63vh * .93)); }
+    /* At this width the hero becomes a vertical composition. This prevents
+       the headline and products from competing for the same horizontal space. */
+    .hero-text { right:var(--edge); left:var(--edge); top:auto; bottom:8%; width:auto; max-width:560px; transform:none; }
+    .hero-text.visible { transform:none; }
+    .hero-bottles { top:max(74px,9svh); right:0; left:0; bottom:auto; display:flex; justify-content:center; }
+    .glass-panel { width:100%; padding:0; justify-content:center; }
+    .bottles-frame { width:min(42vw,32svh,340px); height:auto; max-width:none; aspect-ratio:1; }
+    .hero-text h1 { font-size:clamp(32px,5vw,44px); margin-bottom:16px; }
+    .hero-text p { font-size:14.5px; line-height:1.55; }
     .history-wrap { padding-left:7%; padding-right:7%; }
 
     .formula-catalog { padding-top:34px !important; }
@@ -897,7 +1005,7 @@
     .fc-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
 
     .formula-journey { height:auto !important; min-height:0 !important; padding:92px 0 !important; }
-    .formula-journey > .container { position:relative; top:auto; height:auto; max-width:var(--container); padding:0 30px; display:block; }
+    .formula-journey > .container { position:relative; top:auto; height:auto; max-width:var(--container); padding:0 var(--pad); display:block; }
     .journey-shell { height:auto; grid-template-columns:74px minmax(0,1fr); gap:28px; padding:0; }
     .journey-rail { position:sticky; top:88px; height:calc(100vh - 112px); min-height:510px; padding-top:0; }
     .journey-rail-kicker { display:none; }
@@ -906,26 +1014,26 @@
     .formula-journey .journey-panel[data-scene-state] { position:relative; inset:auto; z-index:auto; margin:0 0 76px; opacity:1; pointer-events:auto; transform:none; filter:none; }
     .journey-intro { max-width:650px; padding:0 0 28px; }
     .journey-intro h2 { font-size:clamp(48px,7vw,68px); }
-    .journey-step { height:auto; min-height:0; display:grid; grid-template-columns:minmax(0,.92fr) minmax(330px,1.08fr); gap:28px; padding:0; align-items:center; }
+    .journey-step { height:auto; min-height:0; display:grid; grid-template-columns:1fr; gap:28px; padding:0; align-items:start; }
     .journey-step-copy, .journey-visual { opacity:1; transform:none; }
-    .journey-visual { height:min(54vw,480px); min-height:380px; }
+    .journey-visual { width:100%; height:min(68vw,480px); min-height:380px; }
     .formula-journey .journey-shell .quality-stamps { position:static; margin:0; opacity:1; transform:none; }
   }
 
   /* Phones */
   @media (max-width:760px){
     :root { --container:100%; }
-    section { scroll-margin-top:70px; }
+    section { scroll-margin-top:82px; }
     .section-pad { padding:68px 0; }
 
-    nav { min-height:62px; padding:10px 18px; background:rgba(13,22,13,.54); }
+    nav { min-height:62px; top:12px; padding:10px 18px; background:rgba(24,34,22,.34); }
     nav.compact { padding:8px 18px; }
     .logo { gap:8px; }
-    .logo-mark { width:31px; height:31px; font-size:14px; }
+    .logo-mark { height:31px; }
     .logo-word { font-size:18px; }
     .nav-burger { width:42px; height:42px; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(255,255,255,.08); cursor:pointer; }
     .nav-burger span { display:block; width:17px; height:1.5px; border-radius:2px; background:#fff; transition:transform .24s ease, opacity .2s ease; }
-    .nav-links { position:absolute; top:calc(100% + 8px); left:12px; right:12px; display:none; flex-direction:column; gap:2px; padding:9px; border:1px solid rgba(255,255,255,.12); border-radius:18px; background:rgba(13,22,13,.97); box-shadow:0 14px 30px rgba(0,0,0,.22); }
+    .nav-links { position:absolute; top:calc(100% + 8px); left:0; right:0; display:none; flex-direction:column; gap:2px; padding:9px; border:1px solid rgba(255,255,255,.12); border-radius:18px; background:rgba(13,22,13,.97); box-shadow:0 14px 30px rgba(0,0,0,.22); }
     .nav-links a { display:block; padding:12px 13px; border-radius:11px; font-size:14px; opacity:.9; }
     .nav-links a:active { background:rgba(255,255,255,.1); }
     nav.menu-open { background:rgba(13,22,13,.94); }
@@ -935,28 +1043,79 @@
     nav.menu-open .nav-burger span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
     .lang-switch button { padding:5px 10px; font-size:11px; }
 
-    .hero-wrapper { height:270vh; min-height:1450px; }
-    .hero-sticky { height:100vh; height:100svh; }
-    .hero-vignette { box-shadow:inset 0 0 110px 28px rgba(0,0,0,.75); }
-    .hero-bottles { top:clamp(76px,11svh,106px); right:0; left:0; bottom:auto; display:flex; justify-content:center; }
-    .glass-panel { width:100%; padding:0; justify-content:center; }
-    .bottles-frame { height:min(47svh,420px); width:min(87vw,calc(47svh * .93)); max-width:87vw; border-radius:18px; }
-    .bottles-frame::after { border-radius:18px; box-shadow:inset 0 0 58px 14px rgba(0,0,0,.55); }
-    .bottles-cluster-img { width:100%; height:100%; object-fit:cover; object-position:center; }
-    .panel-glow { inset:-24px; filter:blur(25px); }
-    .hero-text { right:20px; left:20px; bottom:max(28px,5svh); max-width:520px; transform:none; }
+    /* Mobile hero: no scroll-jacking. The intro is one normal screen-height
+       block, the brand story / products below it flow in the normal page
+       scroll instead of being pinned + revealed by scroll progress. */
+    .hero-wrapper { height:auto; min-height:0; }
+    .hero-sticky { position:relative; top:auto; height:auto; overflow:visible; }
+    .hero-sticky::after {
+      content:''; position:absolute; left:0; right:0; bottom:0; height:110px; z-index:9; pointer-events:none;
+      background: linear-gradient(to top, #F0EDE4 0%, rgba(240,237,228,0) 100%);
+    }
+    /* One clean photo strip, then the headline on a plain solid panel below
+       it — no live canvas scrub, no floating product card stacked on top
+       of a second background, no text sitting over the bottles. */
+    .hero-intro-screen {
+      position:relative; height:auto; overflow:visible;
+      display:flex; flex-direction:column; background: var(--forest-950);
+    }
+    .hero-intro-screen::before {
+      content:''; display:block; flex:0 0 auto; position:relative;
+      height:56svh; min-height:300px; max-height:480px;
+      background:
+        linear-gradient(to top, var(--forest-950) 0%, rgba(13,22,13,.85) 7%, rgba(13,22,13,0) 30%),
+        url('assets/products/hero-bottles-framed4.webp') 38% center/cover no-repeat;
+    }
+    #scene-canvas, .hero-darken, .hero-vignette, .hero-particles, .hero-bottles { display:none; }
+    .hero-text {
+      position:static; margin:0; max-width:none; padding:28px var(--pad) 40px; transform:none;
+      opacity:1; filter:none; animation: hero-text-in .8s cubic-bezier(.16,1,.3,1) both;
+    }
     .hero-text.visible { transform:none; }
+    @keyframes hero-text-in { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
     .hero-text .eyebrow { padding:6px 12px 6px 10px; font-size:10px; letter-spacing:.1em; }
     .hero-text h1 { margin-top:13px; margin-bottom:14px; font-size:clamp(28px,8.2vw,38px); line-height:1.03; }
     .hero-divider { width:78px; margin-bottom:14px; }
     .hero-text p { max-width:360px; padding-left:12px; font-size:13px; line-height:1.52; }
     .hero-sticky:not([data-stage="0"]) .hero-text { transform:translateY(-16px); }
-    .history-wrap { padding:76px 20px 42px; }
-    .history-left, .product-info { padding:20px 0; }
+    /* A textured photo backdrop (instead of flat solid green) plus two
+       "spotlight" cards give the story and the product some rhythm, rather
+       than one long wall of same-weight text. */
+    .history-wrap {
+      position:static; overflow-y:visible; padding:0;
+      background:
+        linear-gradient(180deg, var(--forest-950) 0%, rgba(13,22,13,0) 14%, rgba(6,11,6,.68) 55%, rgba(6,11,6,.88) 76%, var(--forest-950) 100%),
+        url('assets/frames/frame_120.webp') center/cover no-repeat;
+    }
+    .history-container { padding:64px var(--pad) 48px; }
+    .history-left, .product-info, .product-showcase, .product-tabs, .history-timeline {
+      opacity:1; filter:none; transform:none; pointer-events:auto;
+    }
+    .history-left::before, .product-info::before, .product-showcase::before, .product-tabs::before { content:none; }
+
+    .history-left {
+      padding:26px 22px; margin-bottom:34px;
+      background:rgba(9,15,9,.58); border:1px solid rgba(212,162,76,.18); border-radius:20px;
+      backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    }
     .history-left h2 { font-size:27px; }
     .history-left p, .product-info p { font-size:13px; }
     .history-number, .history-number-blur { font-size:64px; }
+
+    .product-showcase {
+      margin-bottom:0; padding:28px 20px 4px;
+      background:rgba(9,15,9,.58); border:1px solid rgba(212,162,76,.18); border-bottom:0; border-radius:20px 20px 0 0;
+    }
+    .product-info {
+      margin-bottom:0; padding:4px 22px 12px;
+      background:rgba(9,15,9,.58); border-left:1px solid rgba(212,162,76,.18); border-right:1px solid rgba(212,162,76,.18);
+    }
+    .product-tabs {
+      margin-bottom:34px; padding:14px 20px 22px; justify-content:center;
+      background:rgba(9,15,9,.58); border:1px solid rgba(212,162,76,.18); border-top:0; border-radius:0 0 20px 20px;
+    }
     .product-bottle-wrap img { height:24svh; }
+    .product-bottle-wrap::before { width:190%; height:190%; }
     .history-timeline { gap:9px; font-size:10px; }
 
     .formula-catalog { padding-top:22px !important; }
@@ -1027,27 +1186,35 @@
   }
 
   @media (max-width:540px){
-    .fc-grid { grid-template-columns:1fr; }
-    .fc-card { padding:22px 20px 21px; }
-    .fc-card-media { height:216px; }
-    .fc-card-media img { height:204px; }
-    .fc-card-arc { top:46px; width:172px; height:98px; border-radius:172px 172px 0 0; }
-    .fc-card-name { font-size:20px; }
-    .fc-card-desc { font-size:13px; }
-    .fc-bullet { font-size:12.5px; }
+    .fc-card { padding:18px 13px 16px; }
+    .fc-card-media { height:150px; margin-bottom:10px; }
+    .fc-card-media img { height:140px; }
+    .fc-card-arc { top:32px; width:124px; height:70px; border-radius:124px 124px 0 0; }
+    .fc-card-name { font-size:15px; margin-bottom:8px; line-height:1.22; }
+    .fc-card-divider { width:min(110px,72%); margin:0 auto 10px; }
+    .fc-card-desc { font-size:11.5px; margin-bottom:10px; }
+    .fc-bullet { font-size:11px; gap:6px; margin-bottom:6px; }
+    .fc-bullet svg { width:12px; height:12px; }
     .journey-visual { min-height:300px; }
   }
 
   @media (max-width:380px){
-    .container { padding-left:16px; padding-right:16px; }
     nav, nav.compact { padding-left:12px; padding-right:12px; }
     .logo-word { font-size:16px; }
-    .logo-mark { width:29px; height:29px; }
+    .logo-mark { height:29px; }
     .lang-switch button { padding:5px 8px; }
     .journey-shell { display:block; }
     .journey-rail { display:none; }
     .journey-step h3 { font-size:29px; }
     .journey-visual { min-height:282px; }
+
+    .fc-grid { gap:9px; }
+    .fc-card { padding:14px 10px 14px; }
+    .fc-card-media { height:128px; margin-bottom:8px; }
+    .fc-card-media img { height:120px; }
+    .fc-card-arc { top:26px; width:104px; height:58px; border-radius:104px 104px 0 0; }
+    .fc-card-name { font-size:13.5px; margin-bottom:6px; }
+    .fc-card-desc { display:none; }
   }
 
   /* Short phones in landscape keep the hero legible instead of stacking text
@@ -1055,9 +1222,10 @@
   @media (max-width:900px) and (max-height:600px) and (orientation:landscape){
     nav { min-height:52px; padding-top:6px; padding-bottom:6px; }
     .hero-wrapper { height:310vh; min-height:0; }
-    .hero-bottles { top:60px; }
-    .bottles-frame { height:54svh; width:min(52vw,calc(54svh * .93)); }
-    .hero-text { right:7%; left:auto; bottom:8%; max-width:340px; }
+    .hero-bottles { top:auto; right:auto; left:6%; bottom:8%; display:block; }
+    .glass-panel { width:auto; display:block; }
+    .bottles-frame { width:min(40vw,52svh,310px); height:auto; aspect-ratio:1; }
+    .hero-text { right:var(--edge); left:auto; bottom:8%; width:36vw; max-width:340px; }
     .hero-text h1 { font-size:26px; }
     .hero-text p { font-size:12px; }
   }
@@ -1069,7 +1237,7 @@
 
 <nav id="nav">
   <a href="#" class="logo">
-    <span class="logo-mark">EV</span>
+    <img class="logo-mark" src="assets/logo-mark.png" alt="ECOVITA">
     <span class="logo-word">ECOVITA</span>
   </a>
   <button class="nav-burger" id="nav-burger" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Открыть меню">
@@ -1079,6 +1247,7 @@
     <li><a href="#history" data-i18n="nav_history">О бренде</a></li>
     <li><a href="#quality" data-i18n="nav_quality">Качество</a></li>
     <li><a href="#catalog" data-i18n="nav_catalog">Каталог</a></li>
+    <li><a href="#faq" data-i18n="nav_faq">Вопросы</a></li>
     <li><a href="#footer" data-i18n="nav_contacts">Контакты</a></li>
   </ul>
   <div class="lang-switch">
@@ -1090,38 +1259,40 @@
 <!-- ================= HERO ================= -->
 <div class="hero-wrapper" id="hero-wrapper">
   <div class="hero-sticky" data-stage="0">
-    <canvas id="scene-canvas"></canvas>
-    <div class="hero-darken"></div>
-    <div class="hero-vignette"></div>
+    <div class="hero-intro-screen" id="hero-intro-screen">
+      <canvas id="scene-canvas"></canvas>
+      <div class="hero-darken"></div>
+      <div class="hero-vignette"></div>
 
-    <div class="hero-particles" id="hero-particles"></div>
+      <div class="hero-particles" id="hero-particles"></div>
 
-    <div class="hero-text" id="hero-text">
-      <span class="eyebrow" data-i18n="hero_eyebrow">ECOVITA · с 1994 года</span>
-      <h1 data-i18n="hero_h1">Качество, проверенное временем</h1>
-      <div class="hero-divider"></div>
-      <p data-i18n="hero_p">БАДы ECOVITA — тщательный выбор ингредиентов и производства по всему миру.</p>
-    </div>
+      <div class="hero-text" id="hero-text">
+        <span class="eyebrow" data-i18n="hero_eyebrow">ECOVITA · с 1994 года</span>
+        <h1 data-i18n="hero_h1">Качество, проверенное временем</h1>
+        <div class="hero-divider"></div>
+        <p data-i18n="hero_p">БАДы ECOVITA — тщательный выбор ингредиентов и производства по всему миру.</p>
+      </div>
 
-    <div class="hero-bottles" id="hero-bottles">
-      <div class="panel-glow"></div>
+      <div class="hero-bottles" id="hero-bottles">
+        <div class="panel-glow"></div>
 
-      <div class="glass-panel" id="glass-panel">
-        <div class="bottles-frame">
-          <img class="bottles-cluster-img" src="assets/products/hero-bottles-framed4.png" alt="ECOVITA Magnesium Citrate + B6, Vitamin C-500, Omega 3">
-        </div>
+        <div class="glass-panel" id="glass-panel">
+          <div class="bottles-frame">
+            <img class="bottles-cluster-img" src="assets/products/hero-bottles-framed4.png" alt="ECOVITA Magnesium Citrate + B6, Vitamin C-500, Omega 3" loading="lazy">
+          </div>
 
-        <div class="callout callout-omega">
-          <span class="callout-pill">OMEGA 3</span>
-          <span class="callout-line"></span><span class="callout-dot"></span>
-        </div>
-        <div class="callout callout-mag">
-          <span class="callout-pill">MAGNESIUM + B6</span>
-          <span class="callout-line"></span><span class="callout-dot"></span>
-        </div>
-        <div class="callout callout-vitc">
-          <span class="callout-pill">VITAMIN C-500</span>
-          <span class="callout-line"></span><span class="callout-dot"></span>
+          <div class="callout callout-omega">
+            <span class="callout-pill">OMEGA 3</span>
+            <span class="callout-line"></span><span class="callout-dot"></span>
+          </div>
+          <div class="callout callout-mag">
+            <span class="callout-pill">MAGNESIUM + B6</span>
+            <span class="callout-line"></span><span class="callout-dot"></span>
+          </div>
+          <div class="callout callout-vitc">
+            <span class="callout-pill">VITAMIN C-500</span>
+            <span class="callout-line"></span><span class="callout-dot"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1321,6 +1492,68 @@
   </div>
 </section>
 
+<!-- ================= FAQ ================= -->
+<section class="faq section-pad" id="faq">
+  <div class="container faq-grid">
+    <div class="faq-intro">
+      <div class="faq-intro-glow" aria-hidden="true"></div>
+      <span class="eyebrow" data-i18n="faq_eyebrow">Частые вопросы</span>
+      <h2 data-i18n="faq_h2">Вопросы и ответы</h2>
+      <p data-i18n="faq_sub">Собрали то, о чём чаще всего спрашивают о БАДах ECOVITA — от состава до хранения.</p>
+    </div>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">01</span>
+          <span data-i18n="faq_q1">Чем БАД отличается от лекарства?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a1">БАД — это не лекарство, а дополнительный источник питательных веществ. Он не диагностирует и не лечит заболевания и не заменяет терапию, назначенную врачом.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">02</span>
+          <span data-i18n="faq_q2">Как правильно принимать БАДы ECOVITA?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a2">Дозировка и способ приёма указаны на упаковке каждого продукта — мы намеренно делаем эту информацию понятной, без сокращений. Превышать заявленную суточную норму не рекомендуется.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">03</span>
+          <span data-i18n="faq_q3">Есть ли противопоказания?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a3">Как и у любых БАДов, возможна индивидуальная непереносимость компонентов. При беременности, кормлении грудью или приёме других препаратов перед началом приёма проконсультируйтесь с врачом.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">04</span>
+          <span data-i18n="faq_q4">Где и как производится продукция ECOVITA?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a4">Мы выбираем производственные площадки по всему миру — там, где конкретное сырьё показывает наилучшее качество, — и контролируем процесс по стандарту GMP на каждом этапе, от сырья до готовой капсулы. Подробнее — в разделе «Путь формулы» выше.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">05</span>
+          <span data-i18n="faq_q5">Как хранить БАДы и какой у них срок годности?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a5">Храните в сухом прохладном месте, недоступном для детей, вдали от прямых солнечных лучей. Срок годности указан на упаковке каждого продукта.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">
+          <span class="faq-num">06</span>
+          <span data-i18n="faq_q6">Где купить продукцию ECOVITA?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner"><p data-i18n="faq_a6">Актуальный ассортимент представлен в каталоге на этом сайте. Чтобы уточнить наличие и способы покупки, свяжитесь с нами через контакты в футере сайта.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= FOOTER ================= -->
 <footer id="footer">
   <div class="container">
@@ -1372,7 +1605,7 @@
 /* ============ I18N ============ */
 const translations = {
   ru: {
-    nav_history:"О бренде", nav_quality:"Качество", nav_catalog:"Каталог", nav_contacts:"Контакты",
+    nav_history:"О бренде", nav_quality:"Качество", nav_catalog:"Каталог", nav_faq:"Вопросы", nav_contacts:"Контакты",
     hero_eyebrow:"ECOVITA · с 1994 года", hero_h1:"Качество, проверенное временем",
     hero_p:"БАДы ECOVITA — тщательный выбор ингредиентов и производства по всему миру.",
     hero_scroll:"скролль вниз",
@@ -1381,6 +1614,7 @@ const translations = {
     hist_year:"1994", hist_today:"сегодня", hist_principle:"Принцип ECOVITA", formula_label:"ФОРМУЛА",
     hist_eyebrow:"История бренда", hist_h2:"Путь длиной<br>в три десятилетия",
     fc_h2:"Каталог формул", fc_sub:"Продуманные нутрицевтические формулы для поддержки здоровья и качества жизни", fc_search:"Поиск по каталогу",
+    showcase_all_products:"Вся продукция",
     hist_p1:"<strong>ECOVITA</strong> — российский бренд витаминов и БАД, основанный в 1994 году. Начав с ограниченной линейки продукции, компания последовательно расширяла ассортимент, опираясь на глубокое изучение рынка сырья — в том числе с применением современных ИИ-инструментов анализа.",
     hist_p2:"Философия бренда проста: <strong>лучший ингредиент берётся там, где он лучший</strong>. Омега-3 — из России, артишок — из Индии. ECOVITA выбирает производственные площадки по всему миру, оптимизируя состав и цену под потребности конкретного рынка — включая Узбекистан, где мы учитываем дозировки и предпочтения местного потребителя.",
     hist_p3:"Часть производственных мощностей принадлежит компании напрямую, что позволяет контролировать качество на каждом этапе — от сырья до готовой капсулы.",
@@ -1405,6 +1639,20 @@ const translations = {
     q2_title:"Прозрачный состав", q2_desc:"Точная дозировка активных веществ указана на каждой упаковке — без скрытых компонентов.",
     q3_title:"Отбор сырья", q3_desc:"Ингредиенты закупаются в странах, где конкретное сырьё показывает наилучшее качество.",
     cat_eyebrow:"Полная линейка", cat_h2:"Каталог продукции",
+    faq_eyebrow:"Частые вопросы", faq_h2:"Вопросы и ответы",
+    faq_sub:"Собрали то, о чём чаще всего спрашивают о БАДах ECOVITA — от состава до хранения.",
+    faq_q1:"Чем БАД отличается от лекарства?",
+    faq_a1:"БАД — это не лекарство, а дополнительный источник питательных веществ. Он не диагностирует и не лечит заболевания и не заменяет терапию, назначенную врачом.",
+    faq_q2:"Как правильно принимать БАДы ECOVITA?",
+    faq_a2:"Дозировка и способ приёма указаны на упаковке каждого продукта — мы намеренно делаем эту информацию понятной, без сокращений. Превышать заявленную суточную норму не рекомендуется.",
+    faq_q3:"Есть ли противопоказания?",
+    faq_a3:"Как и у любых БАДов, возможна индивидуальная непереносимость компонентов. При беременности, кормлении грудью или приёме других препаратов перед началом приёма проконсультируйтесь с врачом.",
+    faq_q4:"Где и как производится продукция ECOVITA?",
+    faq_a4:"Мы выбираем производственные площадки по всему миру — там, где конкретное сырьё показывает наилучшее качество, — и контролируем процесс по стандарту GMP на каждом этапе, от сырья до готовой капсулы. Подробнее — в разделе «Путь формулы» выше.",
+    faq_q5:"Как хранить БАДы и какой у них срок годности?",
+    faq_a5:"Храните в сухом прохладном месте, недоступном для детей, вдали от прямых солнечных лучей. Срок годности указан на упаковке каждого продукта.",
+    faq_q6:"Где купить продукцию ECOVITA?",
+    faq_a6:"Актуальный ассортимент представлен в каталоге на этом сайте. Чтобы уточнить наличие и способы покупки, свяжитесь с нами через контакты в футере сайта.",
     foot_ig:"Instagram", foot_tg:"Telegram", foot_fb:"Facebook", foot_rights:"Все права защищены.",
     tab_all:"Все", show_more:"Показать ещё", show_less:"Свернуть каталог", details:"Подробнее",
     modal_composition:"Состав", modal_usage:"Способ применения", modal_warnings:"Предупреждения",
@@ -1412,7 +1660,7 @@ const translations = {
     modal_no_image:"Изображение скоро появится", close:"Закрыть"
   },
   uz: {
-    nav_history:"Brend haqida", nav_quality:"Sifat", nav_catalog:"Katalog", nav_contacts:"Aloqa",
+    nav_history:"Brend haqida", nav_quality:"Sifat", nav_catalog:"Katalog", nav_faq:"Savollar", nav_contacts:"Aloqa",
     hero_eyebrow:"ECOVITA · 1994 yildan", hero_h1:"Vaqt sinovidan oʻtgan sifat",
     hero_p:"ECOVITA BAD'lari — butun dunyo boʻylab ingredientlar va ishlab chiqarishning ehtiyotkorlik bilan tanlanishi.",
     hero_scroll:"pastga skroll qiling",
@@ -1421,6 +1669,7 @@ const translations = {
     hist_year:"1994", hist_today:"bugun", hist_principle:"ECOVITA tamoyili", formula_label:"FORMULA",
     hist_eyebrow:"Brend tarixi", hist_h2:"Uch oʻn yillik<br>yoʻl",
     fc_h2:"Formulalar katalogi", fc_sub:"Sogʻliq va hayot sifatini qoʻllab-quvvatlash uchun oʻylangan nutritsevtik formulalar", fc_search:"Katalogdan qidirish",
+    showcase_all_products:"Barcha mahsulotlar",
     hist_p1:"<strong>ECOVITA</strong> — 1994 yilda asos solingan vitaminlar va BAD'lar boʻyicha rossiyalik brend. Cheklangan mahsulot toʻplamidan boshlab, kompaniya xomashyo bozorini chuqur oʻrganish asosida assortimentni izchil kengaytirdi — jumladan zamonaviy sun'iy intellekt vositalaridan foydalanib.",
     hist_p2:"Brend falsafasi sodda: <strong>eng yaxshi ingredient u eng yaxshi boʻlgan joydan olinadi</strong>. Omega-3 — Rossiyadan, artishok — Hindistondan. ECOVITA butun dunyo boʻylab ishlab chiqarish maydonchalarini tanlaydi, tarkib va narxni aniq bozor ehtiyojlariga moslashtiradi — jumladan Oʻzbekiston, bu yerda biz mahalliy iste'molchi afzalliklari va dozalarni hisobga olamiz.",
     hist_p3:"Ishlab chiqarish quvvatlarining bir qismi kompaniyaning oʻziga tegishli — bu xomashyodan tayyor kapsulagacha boʻlgan har bir bosqichda sifatni nazorat qilish imkonini beradi.",
@@ -1445,6 +1694,20 @@ const translations = {
     q2_title:"Shaffof tarkib", q2_desc:"Faol moddalarning aniq dozasi har bir qadoqda koʻrsatilgan — yashirin komponentlarsiz.",
     q3_title:"Xomashyo tanlovi", q3_desc:"Ingredientlar aynan shu xomashyo eng yaxshi sifat koʻrsatadigan davlatlardan xarid qilinadi.",
     cat_eyebrow:"Toʻliq liniya", cat_h2:"Mahsulotlar katalogi",
+    faq_eyebrow:"Koʻp beriladigan savollar", faq_h2:"Savol va javoblar",
+    faq_sub:"ECOVITA BAD'lari haqida eng koʻp beriladigan savollarni toʻpladik — tarkibdan saqlashgacha.",
+    faq_q1:"BAD dori vositasidan nimasi bilan farq qiladi?",
+    faq_a1:"BAD — dori emas, balki qoʻshimcha ozuqa moddalari manbai. U kasalliklarni tashxis qoʻymaydi, davolamaydi va shifokor tayinlagan davolashni almashtirmaydi.",
+    faq_q2:"ECOVITA BAD'larini qanday qabul qilish kerak?",
+    faq_a2:"Doza va qabul qilish usuli har bir mahsulot qadogʻida koʻrsatilgan — biz bu maʼlumotni ataylab tushunarli va qisqartmalarsiz qilamiz. Belgilangan kunlik meʼyordan oshirish tavsiya etilmaydi.",
+    faq_q3:"Qarshi koʻrsatmalar bormi?",
+    faq_a3:"Har qanday BAD kabi, komponentlarga individual bardoshsizlik boʻlishi mumkin. Homiladorlik, emizish davri yoki boshqa dorilarni qabul qilishda qabul qilishdan oldin shifokor bilan maslahatlashing.",
+    faq_q4:"ECOVITA mahsulotlari qayerda va qanday ishlab chiqariladi?",
+    faq_a4:"Biz butun dunyo boʻylab ishlab chiqarish maydonchalarini — aynan shu xomashyo eng yaxshi sifat koʻrsatadigan joylarni — tanlaymiz va jarayonni GMP standarti boʻyicha har bosqichda, xomashyodan tayyor kapsulagacha nazorat qilamiz. Batafsil — yuqoridagi «Formula yoʻli» boʻlimida.",
+    faq_q5:"BAD'larni qanday saqlash kerak va yaroqlilik muddati qancha?",
+    faq_a5:"Quruq, salqin, bolalar yeta olmaydigan va toʻgʻridan-toʻgʻri quyosh nuridan uzoq joyda saqlang. Yaroqlilik muddati har bir mahsulot qadogʻida koʻrsatilgan.",
+    faq_q6:"ECOVITA mahsulotlarini qayerdan sotib olsa boʻladi?",
+    faq_a6:"Dolzarb assortiment ushbu saytdagi katalogda taqdim etilgan. Mavjudligi va xarid usullarini aniqlashtirish uchun sayt pastidagi kontaktlar orqali biz bilan bogʻlaning.",
     foot_ig:"Instagram", foot_tg:"Telegram", foot_fb:"Facebook", foot_rights:"Barcha huquqlar himoyalangan.",
     tab_all:"Barchasi", show_more:"Yana ko‘rsatish", show_less:"Katalogni yig‘ish", details:"Batafsil",
     modal_composition:"Tarkibi", modal_usage:"Qabul qilish usuli", modal_warnings:"Ogohlantirishlar",
@@ -1921,7 +2184,11 @@ function loadFrame(i){
   img.onload = ()=>{ if (i===0){ drawFrame(0,true); revealOverlays(); } };
   images[i] = img;
 }
-for (let i=0;i<10;i++) loadFrame(i);
+/* Phones get a plain CSS background photo instead of the canvas scrub (see
+   the ≤760px CSS block) — the canvas is hidden there, so skip loading and
+   drawing frames for it entirely. */
+function isMobileHeroLayout(){ return window.innerWidth <= 760; }
+if (!isMobileHeroLayout()){ for (let i=0;i<10;i++) loadFrame(i); }
 
 function isNarrow(){ return window.innerWidth <= 760 || (window.innerWidth/window.innerHeight) < 0.95; }
 
@@ -1979,13 +2246,23 @@ spawnParticles();
 const bottlesGroup = document.getElementById('hero-bottles');
 if (window.matchMedia('(hover: hover)').matches) {
   document.querySelector('.hero-sticky').addEventListener('mousemove', (e)=>{
+    // The hero changes to a centred vertical composition below 961px.
+    // A mouse transform there would override its responsive position.
+    if (window.innerWidth <= 960){
+      bottlesGroup.style.transform = '';
+      return;
+    }
     const nx = (e.clientX / window.innerWidth) - 0.5;
     const ny = (e.clientY / window.innerHeight) - 0.5;
     bottlesGroup.style.transform = `rotateX(${(-ny*6).toFixed(2)}deg) rotateY(${(nx*8).toFixed(2)}deg)`;
   });
   document.querySelector('.hero-sticky').addEventListener('mouseleave', ()=>{
-    bottlesGroup.style.transform = 'rotateX(0) rotateY(0)';
+    // Clearing the inline value lets the scroll state and media rules take over.
+    bottlesGroup.style.transform = '';
   });
+  window.addEventListener('resize', ()=>{
+    if (window.innerWidth <= 960) bottlesGroup.style.transform = '';
+  }, {passive:true});
 }
 
 let ticking=false;
@@ -2023,15 +2300,23 @@ function renderShowcase(){
   const list = showcaseProducts[currentLang] || showcaseProducts.ru;
   const p = list[showcaseIndex];
   const img = document.getElementById('showcase-img');
-  img.style.opacity = 0;
+  const formulaLabel = document.querySelector('.formula-label');
+  const eyebrowEl = document.getElementById('showcase-eyebrow');
+  const headlineEl = document.getElementById('showcase-headline');
+  const descEl = document.getElementById('showcase-desc');
+  // Image and text crossfade together — swapping content only after the
+  // fade-out has actually finished avoids the abrupt "flash" of switching
+  // mid-fade, which read as too sudden between products.
+  const fadeEls = [img, formulaLabel, eyebrowEl, headlineEl, descEl];
+  fadeEls.forEach(el=>{ el.style.opacity = 0; });
   setTimeout(()=>{
     img.src = p.img;
     document.getElementById('formula-num').textContent = p.formula;
-    document.getElementById('showcase-eyebrow').textContent = p.eyebrow;
-    document.getElementById('showcase-headline').textContent = p.headline;
-    document.getElementById('showcase-desc').textContent = p.desc;
-    img.style.opacity = 1;
-  }, 180);
+    eyebrowEl.textContent = p.eyebrow;
+    headlineEl.textContent = p.headline;
+    descEl.textContent = p.desc;
+    fadeEls.forEach(el=>{ el.style.opacity = 1; });
+  }, 420);
 
   const tabsEl = document.getElementById('product-tabs');
   tabsEl.innerHTML = '';
@@ -2046,9 +2331,17 @@ function renderShowcase(){
   const prevBtn = document.createElement('button');
   prevBtn.className = 'tab-arrow'; prevBtn.innerHTML = '&#8249;';
   prevBtn.onclick = ()=>{ showcaseIndex = (showcaseIndex - 1 + list.length) % list.length; autoProductIndex = showcaseIndex; renderShowcase(); };
+
   const nextBtn = document.createElement('button');
-  nextBtn.className = 'tab-arrow'; nextBtn.innerHTML = '&#8250;';
-  nextBtn.onclick = ()=>{ showcaseIndex = (showcaseIndex + 1) % list.length; autoProductIndex = showcaseIndex; renderShowcase(); };
+  const isLastPreview = showcaseIndex === list.length - 1;
+  if (isLastPreview){
+    nextBtn.className = 'tab-arrow tab-arrow-cta';
+    nextBtn.innerHTML = `<span>${t('showcase_all_products')}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+    nextBtn.onclick = ()=>{ location.hash = 'catalog'; };
+  } else {
+    nextBtn.className = 'tab-arrow'; nextBtn.innerHTML = '&#8250;';
+    nextBtn.onclick = ()=>{ showcaseIndex = (showcaseIndex + 1) % list.length; autoProductIndex = showcaseIndex; renderShowcase(); };
+  }
   tabsEl.appendChild(prevBtn);
   tabsEl.appendChild(nextBtn);
 }
@@ -2163,8 +2456,16 @@ function onScroll(){
   if (ticking) return;
   ticking = true;
   requestAnimationFrame(()=>{
-    const rect = heroWrapper.getBoundingClientRect();
     navEl.classList.toggle('compact', window.scrollY>40);
+
+    // Phones use the static hero (no pin, no scrub) — the opening frame is
+    // already drawn once and everything below is normal page flow.
+    if (isMobileHeroLayout()){
+      ticking=false;
+      return;
+    }
+
+    const rect = heroWrapper.getBoundingClientRect();
 
     // Ниже первого экрана герой не виден: не выполняем canvas-отрисовку и
     // обновление его элементов на каждом скролле каталога.
@@ -2227,6 +2528,48 @@ applyI18n();
 initShowcase();
 initFormulaCatalog();
 initFormulaJourney();
+initFaq();
+
+/* ============ NAV GRID ALIGNMENT ============
+   --edge is a CSS calc() approximation of ".container's content edge, as
+   seen from a position:fixed element with no max-width of its own to get
+   centered by". calc()'s 100vw ignores the scrollbar though, so on a
+   classic (non-overlay) scrollbar it drifts a few px from where .container
+   actually lands. Measuring a real .container and writing the exact result
+   back over --edge keeps the floating nav pixel-locked to the same column
+   as every section below it, at any zoom level or scrollbar style. */
+function syncNavEdge(){
+  const probe = document.querySelector('.formula-catalog > .container');
+  if (!probe) return;
+  const rect = probe.getBoundingClientRect();
+  const padLeft = parseFloat(getComputedStyle(probe).paddingLeft) || 0;
+  document.documentElement.style.setProperty('--edge', Math.max(0, rect.left + padLeft) + 'px');
+}
+window.addEventListener('resize', syncNavEdge, {passive:true});
+syncNavEdge();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncNavEdge);
+
+/* ============ FAQ ACCORDION ============ */
+function initFaq(){
+  const items = [...document.querySelectorAll('.faq-item')];
+  items.forEach(item=>{
+    const btn = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
+    btn.addEventListener('click', ()=>{
+      const open = item.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+      answer.style.maxHeight = open ? answer.scrollHeight + 'px' : '';
+    });
+  });
+  // Keep an open answer's height correct if the viewport reflows its text.
+  window.addEventListener('resize', ()=>{
+    items.forEach(item=>{
+      if (!item.classList.contains('is-open')) return;
+      const answer = item.querySelector('.faq-answer');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    });
+  }, {passive:true});
+}
 </script>
 
 </body>
