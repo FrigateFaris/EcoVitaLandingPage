@@ -1085,7 +1085,7 @@
       position:static; overflow-y:visible; padding:0;
       background:
         linear-gradient(180deg, var(--forest-950) 0%, rgba(13,22,13,0) 14%, rgba(6,11,6,.68) 55%, rgba(6,11,6,.88) 76%, var(--forest-950) 100%),
-        url('assets/frames/frame_120.webp') center/cover no-repeat;
+        url('assets/frames1/frame_120.jpg') center/cover no-repeat;
     }
     .history-container { padding:64px var(--pad) 48px; }
     .history-left, .product-info, .product-showcase, .product-tabs, .history-timeline {
@@ -1847,12 +1847,12 @@ const fcProductCategory = {
   'Минералы':'beauty', 'Пищеварение':'digestion', 'Витамины':'beauty', 'Красота':'beauty', 'Спорт':'metabolism'
 };
 
-function fcFullImageSrc(product){ return product.image || `assets/products/catalog2/${product.img}`; }
+function fcFullImageSrc(product){ return product.image || `assets/products/${product.img}`; }
 
 function fcImageSrc(product){
   if (product.image && product.image.startsWith('assets/products/')){
     const fileName = product.image.split('/').pop().replace(/\.(png|jpe?g)$/i, '.webp');
-    return `assets/products/thumbs/${fileName}`;
+    return `assets/products/${fileName}`;
   }
   return fcFullImageSrc(product);
 }
@@ -2156,7 +2156,7 @@ document.addEventListener('keydown', event=>{
 
 /* ============ HERO SCROLL-SCRUB ============ */
 const TOTAL_FRAMES = 241;
-function framePath(i){ return `assets/frames/frame_${String(i+1).padStart(3,'0')}.webp`; }
+function framePath(i){ return `assets/frames1/frame_${String(i+1).padStart(3,'0')}.jpg`; }
 
 const canvas = document.getElementById('scene-canvas');
 const ctx = canvas.getContext('2d');
