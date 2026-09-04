@@ -140,13 +140,6 @@
     <div class="fc-grid" id="fc-grid"></div>
     <div class="fc-catalog-actions" id="fc-catalog-actions"></div>
   </div>
-
-  <div class="fc-modal-overlay" id="fc-modal">
-    <div class="fc-modal">
-      <button class="fc-modal-close" id="fc-modal-close" aria-label="Close">&times;</button>
-      <div class="fc-modal-body" id="fc-modal-body"></div>
-    </div>
-  </div>
 </section>
 
 <!-- ================= FORMULA JOURNEY ================= -->
@@ -344,6 +337,18 @@
     <div class="footer-copy">© 2026 ECOVITA. <span data-i18n="foot_rights">Все права защищены.</span></div>
   </div>
 </footer>
+
+<!-- Moved out of .formula-catalog: that section has isolation:isolate +
+     overflow:hidden, which trapped this fixed-position modal in its own
+     stacking context (and clipped it on some mobile browsers) — it could
+     never paint above the floating nav pill, so the close button was
+     unreachable. Top-level, it now stacks normally against z-index:300. -->
+<div class="fc-modal-overlay" id="fc-modal">
+  <div class="fc-modal">
+    <button class="fc-modal-close" id="fc-modal-close" aria-label="Close">&times;</button>
+    <div class="fc-modal-body" id="fc-modal-body"></div>
+  </div>
+</div>
 
 <div class="product-modal" id="product-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-product-title">
   <div class="product-modal-backdrop" data-close-product-modal></div>
