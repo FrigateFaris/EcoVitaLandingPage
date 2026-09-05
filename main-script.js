@@ -571,6 +571,31 @@ if (!isMobileHeroLayout()){
   heroVideo.load();
 }
 
+/* Setting video.currentTime on every scroll tick (up to ~60/s) fires a real
+   seek each time — unlike a canvas drawImage, a seek is async and goes
+   through the browser's whole media pipeline, so a fast scroll can queue up
+   far more seeks than the decoder can keep up with and the video visibly
+   stutters/lags behind (worse than the old frame-image version, which never
+   had to wait on anything async). Only ever let one seek be in flight: while
+   it's settling, just remember the latest scroll-driven target and jump
+   straight there once the current seek finishes, instead of stepping
+   through every position in between. */
+let heroSeekPending = false;
+let heroSeekQueuedTime = null;
+function seekHeroVideo(time){
+  if (heroSeekPending){ heroSeekQueuedTime = time; return; }
+  heroSeekPending = true;
+  heroVideo.currentTime = time;
+}
+heroVideo.addEventListener('seeked', ()=>{
+  heroSeekPending = false;
+  if (heroSeekQueuedTime !== null){
+    const next = heroSeekQueuedTime;
+    heroSeekQueuedTime = null;
+    seekHeroVideo(next);
+  }
+});
+
 function revealOverlays(){
   heroText.classList.add('visible');
   const panel = document.getElementById('glass-panel');
