@@ -563,7 +563,7 @@ document.addEventListener('keydown', event=>{
 // page has otherwise finished loading, frames are normally already decoded
 // well before the user scrolls to them.
 const TOTAL_FRAMES = 241;
-function framePath(i){ return `assets/frames12/frame_${String(i+1).padStart(3,'0')}.jpg`; }
+function framePath(i){ return `assets/frames12/frame_${String(i+1).padStart(3,'0')}.webp`; }
 
 const canvas = document.getElementById('scene-canvas');
 const ctx = canvas.getContext('2d');
