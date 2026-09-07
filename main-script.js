@@ -554,7 +554,14 @@ document.addEventListener('keydown', event=>{
 /* ============ HERO SCROLL-SCRUB ============ */
 // Canvas + JPEG frame sequence: each scroll tick draws one frame straight
 // into the canvas. No decode pipeline to wait on (unlike a <video> seek),
-// so there's nothing to queue up or fall behind on.
+// so there's nothing to queue up or fall behind on — as long as the frame
+// is already decoded. A plain <img> only decodes on its first drawImage()
+// call, synchronously, on the main thread — that decode is what stutters
+// mid-scroll. createImageBitmap() decodes ahead of time (off the main
+// thread where supported), so by the time a frame is actually drawn it's
+// just a cheap blit. Combined with a quiet full-sequence preload once the
+// page has otherwise finished loading, frames are normally already decoded
+// well before the user scrolls to them.
 const TOTAL_FRAMES = 241;
 function framePath(i){ return `assets/frames12/frame_${String(i+1).padStart(3,'0')}.jpg`; }
 
@@ -565,7 +572,9 @@ const heroText = document.getElementById('hero-text');
 const heroBottles = document.getElementById('hero-bottles');
 const navEl = document.getElementById('nav');
 
-let images = new Array(TOTAL_FRAMES);
+const HERO_BITMAP_SUPPORTED = typeof createImageBitmap === 'function';
+let frames = new Array(TOTAL_FRAMES).fill(null);
+let framePending = new Array(TOTAL_FRAMES).fill(false);
 let currentFrame = -1;
 
 function resizeCanvas(){
@@ -576,19 +585,60 @@ function resizeCanvas(){
   if (currentFrame>=0) drawFrame(currentFrame, true);
 }
 
-function loadFrame(i){
-  if (images[i]) return;
-  const img = new Image();
-  img.src = framePath(i);
-  img.onload = ()=>{ if (i===0){ drawFrame(0,true); revealOverlays(); } };
-  images[i] = img;
+function onFrameReady(i){
+  framePending[i] = false;
+  if (i===0){ drawFrame(0,true); revealOverlays(); }
+  else if (i===currentFrame) drawFrame(i,true);
 }
+
+async function loadFrameBitmap(i){
+  if (frames[i] || framePending[i]) return;
+  framePending[i] = true;
+  try {
+    const resp = await fetch(framePath(i));
+    const blob = await resp.blob();
+    frames[i] = await createImageBitmap(blob);
+    onFrameReady(i);
+  } catch(e){
+    framePending[i] = false;
+  }
+}
+
+function loadFrameLegacy(i){
+  if (frames[i] || framePending[i]) return Promise.resolve();
+  framePending[i] = true;
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{ frames[i] = img; onFrameReady(i); resolve(); };
+    img.onerror = ()=>{ framePending[i] = false; resolve(); };
+    img.src = framePath(i);
+  });
+}
+
+const loadFrame = HERO_BITMAP_SUPPORTED ? loadFrameBitmap : loadFrameLegacy;
+
+// Quietly decode the whole sequence in the background once the page's own
+// critical resources are done loading, a handful of frames at a time so it
+// never competes with anything the user is actually waiting on. By the
+// time a normal scroll reaches a given frame it's usually already decoded.
+const HERO_PRELOAD_CONCURRENCY = 6;
+function preloadAllHeroFrames(){
+  let next = 0;
+  async function worker(){
+    while (next < TOTAL_FRAMES){
+      await loadFrame(next++);
+    }
+  }
+  for (let w=0; w<HERO_PRELOAD_CONCURRENCY; w++) worker();
+}
+
 /* Phones get a plain CSS background photo instead of the scroll scrub (see
    the ≤760px CSS block) — the canvas is hidden there, so skip loading
    frames for it entirely. */
 function isMobileHeroLayout(){ return window.innerWidth <= 760; }
 if (!isMobileHeroLayout()){
   for (let i=0;i<10;i++) loadFrame(i);
+  window.addEventListener('load', preloadAllHeroFrames, {once:true});
 }
 
 function isNarrow(){ return window.innerWidth <= 760 || (window.innerWidth/window.innerHeight) < 0.95; }
@@ -596,23 +646,23 @@ function isNarrow(){ return window.innerWidth <= 760 || (window.innerWidth/windo
 function drawFrame(i, force){
   if (!force && i===currentFrame) return;
   currentFrame = i;
-  const img = images[i];
-  if (!img || !img.complete || img.naturalWidth===0){ loadFrame(i); return; }
+  const frame = frames[i];
+  if (!frame){ loadFrame(i); return; }
   const cw = window.innerWidth, ch = window.innerHeight;
-  const iw = img.naturalWidth, ih = img.naturalHeight;
+  const iw = frame.width, ih = frame.height;
   ctx.clearRect(0,0,cw,ch);
 
   if (isNarrow()){
     ctx.save();
     ctx.filter = 'blur(24px) brightness(0.55)';
     const bScale = Math.max(cw/iw, ch/ih)*1.1;
-    ctx.drawImage(img, (cw-iw*bScale)/2, (ch-ih*bScale)/2, iw*bScale, ih*bScale);
+    ctx.drawImage(frame, (cw-iw*bScale)/2, (ch-ih*bScale)/2, iw*bScale, ih*bScale);
     ctx.restore();
     const scale = Math.min(cw/iw, ch/ih)*0.98;
-    ctx.drawImage(img, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
+    ctx.drawImage(frame, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
   } else {
     const scale = Math.max(cw/iw, ch/ih);
-    ctx.drawImage(img, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
+    ctx.drawImage(frame, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
   }
 }
 
