@@ -99,7 +99,7 @@
   /* ================= HERO ================= */
   .hero-wrapper { position: relative; height: 300vh; }
   .hero-sticky { position: sticky; top:0; height:100vh; overflow:hidden; background:var(--forest-950); }
-  #scene-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center; background:var(--forest-950); }
+  #scene-canvas { position:absolute; top:0; left:0; width:100%; height:100%; background:var(--forest-950); }
   .hero-darken {
     position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(270deg, rgba(6,12,6,0.66) 0%, rgba(6,12,6,0.3) 40%, rgba(6,12,6,0.04) 62%);
@@ -1056,7 +1056,7 @@
         linear-gradient(to top, var(--forest-950) 0%, rgba(13,22,13,.85) 7%, rgba(13,22,13,0) 30%),
         url('assets/products/hero-bottles-framed4.webp') 38% center/cover no-repeat;
     }
-    #scene-video, .hero-darken, .hero-vignette, .hero-particles, .hero-bottles { display:none; }
+    #scene-canvas, .hero-darken, .hero-vignette, .hero-particles, .hero-bottles { display:none; }
     .hero-text {
       position:static; margin:0; max-width:none; padding:28px var(--pad) 40px; transform:none;
       opacity:1; filter:none; animation: hero-text-in .8s cubic-bezier(.16,1,.3,1) both;

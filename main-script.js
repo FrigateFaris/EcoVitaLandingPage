@@ -552,49 +552,72 @@ document.addEventListener('keydown', event=>{
 });
 
 /* ============ HERO SCROLL-SCRUB ============ */
-// Scrubbed via a hardware-decoded <video> (assets/video/hero-scrub.mp4)
-// instead of a canvas + JPEG-per-scroll-tick sequence — the browser's GPU
-// decoder seeks it, so there's no per-frame image loading/decoding here.
-const heroVideo = document.getElementById('scene-video');
-const HERO_VIDEO_DURATION_FALLBACK = 241/24;
+// Canvas + JPEG frame sequence: each scroll tick draws one frame straight
+// into the canvas. No decode pipeline to wait on (unlike a <video> seek),
+// so there's nothing to queue up or fall behind on.
+const TOTAL_FRAMES = 241;
+function framePath(i){ return `assets/frames12/frame_${String(i+1).padStart(3,'0')}.jpg`; }
+
+const canvas = document.getElementById('scene-canvas');
+const ctx = canvas.getContext('2d');
 const heroWrapper = document.getElementById('hero-wrapper');
 const heroText = document.getElementById('hero-text');
 const heroBottles = document.getElementById('hero-bottles');
 const navEl = document.getElementById('nav');
 
-/* Phones get a plain CSS background photo instead of the scroll scrub (see
-   the ≤760px CSS block) — the video is hidden there, so skip loading it
-   entirely. */
-function isMobileHeroLayout(){ return window.innerWidth <= 760; }
-if (!isMobileHeroLayout()){
-  heroVideo.addEventListener('loadeddata', revealOverlays, {once:true});
-  heroVideo.load();
+let images = new Array(TOTAL_FRAMES);
+let currentFrame = -1;
+
+function resizeCanvas(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  canvas.width = window.innerWidth*dpr;
+  canvas.height = window.innerHeight*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if (currentFrame>=0) drawFrame(currentFrame, true);
 }
 
-/* Setting video.currentTime on every scroll tick (up to ~60/s) fires a real
-   seek each time — unlike a canvas drawImage, a seek is async and goes
-   through the browser's whole media pipeline, so a fast scroll can queue up
-   far more seeks than the decoder can keep up with and the video visibly
-   stutters/lags behind (worse than the old frame-image version, which never
-   had to wait on anything async). Only ever let one seek be in flight: while
-   it's settling, just remember the latest scroll-driven target and jump
-   straight there once the current seek finishes, instead of stepping
-   through every position in between. */
-let heroSeekPending = false;
-let heroSeekQueuedTime = null;
-function seekHeroVideo(time){
-  if (heroSeekPending){ heroSeekQueuedTime = time; return; }
-  heroSeekPending = true;
-  heroVideo.currentTime = time;
+function loadFrame(i){
+  if (images[i]) return;
+  const img = new Image();
+  img.src = framePath(i);
+  img.onload = ()=>{ if (i===0){ drawFrame(0,true); revealOverlays(); } };
+  images[i] = img;
 }
-heroVideo.addEventListener('seeked', ()=>{
-  heroSeekPending = false;
-  if (heroSeekQueuedTime !== null){
-    const next = heroSeekQueuedTime;
-    heroSeekQueuedTime = null;
-    seekHeroVideo(next);
+/* Phones get a plain CSS background photo instead of the scroll scrub (see
+   the ≤760px CSS block) — the canvas is hidden there, so skip loading
+   frames for it entirely. */
+function isMobileHeroLayout(){ return window.innerWidth <= 760; }
+if (!isMobileHeroLayout()){
+  for (let i=0;i<10;i++) loadFrame(i);
+}
+
+function isNarrow(){ return window.innerWidth <= 760 || (window.innerWidth/window.innerHeight) < 0.95; }
+
+function drawFrame(i, force){
+  if (!force && i===currentFrame) return;
+  currentFrame = i;
+  const img = images[i];
+  if (!img || !img.complete || img.naturalWidth===0){ loadFrame(i); return; }
+  const cw = window.innerWidth, ch = window.innerHeight;
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  ctx.clearRect(0,0,cw,ch);
+
+  if (isNarrow()){
+    ctx.save();
+    ctx.filter = 'blur(24px) brightness(0.55)';
+    const bScale = Math.max(cw/iw, ch/ih)*1.1;
+    ctx.drawImage(img, (cw-iw*bScale)/2, (ch-ih*bScale)/2, iw*bScale, ih*bScale);
+    ctx.restore();
+    const scale = Math.min(cw/iw, ch/ih)*0.98;
+    ctx.drawImage(img, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
+  } else {
+    const scale = Math.max(cw/iw, ch/ih);
+    ctx.drawImage(img, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
   }
-});
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 function revealOverlays(){
   heroText.classList.add('visible');
@@ -857,8 +880,9 @@ function onScroll(){
     const scrollable = heroWrapper.offsetHeight - window.innerHeight;
     let progress = -rect.top/scrollable;
     progress = Math.min(1, Math.max(0, progress));
-    const dur = heroVideo.duration || HERO_VIDEO_DURATION_FALLBACK;
-    if (isFinite(dur) && dur > 0) seekHeroVideo(progress * dur);
+    const frameIndex = Math.min(TOTAL_FRAMES-1, Math.floor(progress*(TOTAL_FRAMES-1)));
+    for (let i=frameIndex;i<Math.min(TOTAL_FRAMES,frameIndex+10);i++) loadFrame(i);
+    drawFrame(frameIndex);
     while (heroStage < 4 && progress > STAGE_ENTER[heroStage+1]) setHeroStage(heroStage+1);
     while (heroStage > 0 && progress < STAGE_EXIT[heroStage]) setHeroStage(heroStage-1);
 
