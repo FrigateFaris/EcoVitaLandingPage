@@ -858,7 +858,7 @@ function onScroll(){
     let progress = -rect.top/scrollable;
     progress = Math.min(1, Math.max(0, progress));
     const dur = heroVideo.duration || HERO_VIDEO_DURATION_FALLBACK;
-    if (isFinite(dur) && dur > 0) heroVideo.currentTime = progress * dur;
+    if (isFinite(dur) && dur > 0) seekHeroVideo(progress * dur);
     while (heroStage < 4 && progress > STAGE_ENTER[heroStage+1]) setHeroStage(heroStage+1);
     while (heroStage > 0 && progress < STAGE_EXIT[heroStage]) setHeroStage(heroStage-1);
 
