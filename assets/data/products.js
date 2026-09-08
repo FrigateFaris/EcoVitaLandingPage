@@ -33,7 +33,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "2 капсулы: концентрат натурального рыбьего жира — 2 г (2000 мг); ЭПК (эйкозапентаеновая кислота) — 360 мг; ДГК (докозагексаеновая кислота) — 240 мг",
     "usage_ru": "Принимать по 2 капсулы 2 раза в день во время еды.",
     "warnings_ru": "Только для взрослых. Если вы беременны, кормите грудью, принимаете лекарства или у вас есть заболевания, проконсультируйтесь с врачом.",
-    "image": "assets/products/omega-3-30-detail.png",
+    "image": "assets/products/omega-3-30-detail-full.webp",
     "category_tab_uz": "Omega-3"
   },
   {
@@ -52,7 +52,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "2 капсулы: концентрат натурального рыбьего жира — 2 г (2000 мг); ЭПК — 360 мг; ДГК — 240 мг",
     "usage_ru": "Принимать по 2 капсулы 2 раза в день во время еды.",
     "warnings_ru": "Только для взрослых. Если вы беременны, кормите грудью, принимаете лекарства или у вас есть заболевания, проконсультируйтесь с врачом.",
-    "image": "assets/products/omega-3-100.png",
+    "image": "assets/products/omega-3-100-full.webp",
     "category_tab_uz": "Omega-3"
   },
   {
@@ -71,7 +71,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Экстракт гриба Lion's Mane (Hericium erinaceus). Активные вещества: B-глюканы, hericenones и erinacines",
     "usage_ru": "Принимать по 1--2 капсулы в день во время еды, запивая достаточным количеством воды. Рекомендуемый курс приема — от 1 месяца.",
     "warnings_ru": "Хранить в сухом, защищенном от света месте при температуре не выше 25°C. Беречь от влаги и прямых солнечных лучей. Хранить в недоступном для детей месте.",
-    "image": "assets/products/lions-mane-90-detail.png",
+    "image": "assets/products/lions-mane-90-detail-full.webp",
     "category_tab_uz": "Oʻsimliklar"
   },
   {
@@ -90,7 +90,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Coenzyme Q10 — 100 мг; 60 капсул в упаковке",
     "usage_ru": "Принимать по 1 капсуле в день во время еды, запивая достаточным количеством воды.",
     "warnings_ru": "Хранить в сухом и прохладном месте при температуре не выше 25°C. Беречь от прямых солнечных лучей и влаги. Хранить в недоступном для детей месте.",
-    "image": "assets/products/coenzyme-q10-60.png",
+    "image": "assets/products/coenzyme-q10-60-full.webp",
     "category_tab_uz": "Antioksidantlar"
   },
   {
@@ -145,7 +145,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Magnesium Citrate; Vitamin B6; 60 капсул в упаковке",
     "usage_ru": "Принимать по 1--2 капсулы в день во время еды, запивая достаточным количеством воды.",
     "warnings_ru": "Хранить в сухом и прохладном месте при температуре не выше 25°C. Беречь от влаги и прямых солнечных лучей. Хранить в недоступном для детей месте.",
-    "image": "assets/products/magnesium-citrate-b6-60.png",
+    "image": "assets/products/magnesium-citrate-b6-60-full.webp",
     "category_tab_uz": "Asab tizimi"
   },
   {
@@ -254,7 +254,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Порция = 1 капсула: селен (элементарный, из L-селенометионина)",
     "usage_ru": "Принимать по 1 капсуле в день во время еды.",
     "warnings_ru": "Только для взрослых. Перед приемом во время беременности, грудного вскармливания, в случае приема препаратов или наличия заболеваний проконсультируйтесь с врачом.",
-    "image": "assets/products/selenium-90.png",
+    "image": "assets/products/selenium-90-full.webp",
     "category_tab_uz": "Minerallar"
   },
   {
@@ -273,7 +273,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Натуральные фосфолипиды: фосфатидилхолин, фосфатидилинозитол, фосфатидилэтаноламин",
     "usage_ru": "Принимать во время еды, запивая достаточным количеством воды.",
     "warnings_ru": "Продукт может естественным образом менять цвет. После вскрытия упаковки хранить в сухом и прохладном месте.",
-    "image": "assets/products/sunflower-lecithin-100.png",
+    "image": "assets/products/sunflower-lecithin-100-full.webp",
     "category_tab_uz": "Ovqat hazm qilish"
   },
   {
@@ -292,7 +292,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Порция = 1 капсула: цинк (из 270 мг пиколината цинка) — 50 мг",
     "usage_ru": "Принимать по 1 капсуле в день во время еды.",
     "warnings_ru": "Только для взрослых. Этот продукт не предназначен для длительного применения; принимать согласно инструкции. Не следует принимать в период беременности или кормления грудью.",
-    "image": "assets/products/zinc-picolinate-60.png",
+    "image": "assets/products/zinc-picolinate-60-full.webp",
     "category_tab_uz": "Minerallar"
   },
   {
@@ -311,7 +311,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Порция = 1 таблетка: витамин C (в виде аскорбиновой кислоты) — 500 мг; порошок шиповника (Rosa canina, плоды) — 40 мг",
     "usage_ru": "Принимать по 1 таблетке 1--3 раза в день, желательно во время еды.",
     "warnings_ru": "После вскрытия упаковки хранить в сухом и прохладном месте. Только для взрослых. Перед приемом во время беременности, грудного вскармливания, в случае приема препаратов или наличия заболеваний проконсультируйтесь с врачом.",
-    "image": "assets/products/vitamin-c-500-100.png",
+    "image": "assets/products/vitamin-c-500-100-full.webp",
     "category_tab_uz": "Vitaminlar"
   },
   {
@@ -330,7 +330,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Порция = 2 столовые ложки без горки (11 г): белки — 10 г; гидролизованный коллаген — 10 г; гиалуроновая кислота; витамин C",
     "usage_ru": "Добавьте 2 столовых ложки без горки в воду, сок или любимый напиток каждый день.",
     "warnings_ru": "Предупреждение. Только для взрослых. Если вы беременны, кормите грудью, принимаете лекарства или у вас есть заболевания, проконсультируйтесь с врачом.",
-    "image": "assets/products/marine-collagen-240.png",
+    "image": "assets/products/marine-collagen-240-full.webp",
     "category_tab_uz": "Goʻzallik"
   },
   {
@@ -367,7 +367,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Комплекс витаминов и минералов для мужчин; витамины группы B для энергии; витамины и антиоксиданты для иммунитета; 90 таблеток в упаковке",
     "usage_ru": "Принимать по 1 таблетке в день во время еды, запивая достаточным количеством воды.",
     "warnings_ru": "Хранить в сухом, прохладном месте при температуре не выше 25°C. Беречь от влаги и прямых солнечных лучей. Хранить в недоступном для детей месте.",
-    "image": "assets/products/men-active-90.png",
+    "image": "assets/products/men-active-90-full.webp",
     "category_tab_uz": "Sport"
   },
   {
@@ -386,7 +386,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "Комплекс витаминов и минералов для женщин; витамины группы B для энергии; витамины и микроэлементы для красоты и иммунитета; 90 таблеток в упаковке",
     "usage_ru": "Принимать по 1 таблетке в день во время еды, запивая достаточным количеством воды.",
     "warnings_ru": "Хранить в сухом и прохладном месте при температуре не выше 25°C. Беречь от влаги и прямых солнечных лучей. Хранить в недоступном для детей месте.",
-    "image": "assets/products/women-balance-90.png",
+    "image": "assets/products/women-balance-90-full.webp",
     "category_tab_uz": "Goʻzallik"
   },
   {
@@ -405,7 +405,7 @@ window.ECOVITA_PRODUCTS = [
     "composition_ru": "L-Carnitine — 850 мг в 2 капсулах; 90 капсул в упаковке",
     "usage_ru": "Принимать по 2 капсулы в день, запивая достаточным количеством воды. Рекомендуется принимать до физической активности или во время еды.",
     "warnings_ru": "Хранить в сухом и прохладном месте при температуре не выше 25°C. Беречь от влаги и прямых солнечных лучей. Хранить в недоступном для детей месте.",
-    "image": "assets/products/l-carnitine-90.png",
+    "image": "assets/products/l-carnitine-90-full.webp",
     "category_tab_uz": "Sport"
   },
   {
@@ -537,7 +537,7 @@ window.ECOVITA_PRODUCTS = [
     "usage_uz": "Qadoqdagi yo‘riqnomaga amal qiling.",
     "warnings_ru": "Не превышайте рекомендуемую дозировку. При беременности, кормлении грудью, приёме препаратов или наличии заболеваний проконсультируйтесь с врачом.",
     "warnings_uz": "Tavsiya etilgan dozani oshirmang. Homiladorlik, emizish, dori qabul qilish yoki kasalliklar mavjud bo‘lsa, shifokor bilan maslahatlashing.",
-    "image": "assets/products/magnesium-glycinate-120.png"
+    "image": "assets/products/magnesium-glycinate-120-full.webp"
   },
   {
     "num": 30,
@@ -560,7 +560,7 @@ window.ECOVITA_PRODUCTS = [
     "usage_uz": "Qadoqdagi yo‘riqnomaga amal qiling.",
     "warnings_ru": "Не превышайте рекомендуемую дозировку. При беременности, кормлении грудью, приёме препаратов или наличии заболеваний проконсультируйтесь с врачом.",
     "warnings_uz": "Tavsiya etilgan dozani oshirmang. Homiladorlik, emizish, dori qabul qilish yoki kasalliklar mavjud bo‘lsa, shifokor bilan maslahatlashing.",
-    "image": "assets/products/magnesium-malate-60.png"
+    "image": "assets/products/magnesium-malate-60-full.webp"
   },
   {
     "num": 31,
@@ -583,7 +583,7 @@ window.ECOVITA_PRODUCTS = [
     "usage_uz": "Qadoqdagi yo‘riqnomaga amal qiling.",
     "warnings_ru": "Не превышайте рекомендуемую дозировку. При беременности, кормлении грудью, приёме препаратов или наличии заболеваний проконсультируйтесь с врачом.",
     "warnings_uz": "Tavsiya etilgan dozani oshirmang. Homiladorlik, emizish, dori qabul qilish yoki kasalliklar mavjud bo‘lsa, shifokor bilan maslahatlashing.",
-    "image": "assets/products/chlorophyll-liquid-500.png"
+    "image": "assets/products/chlorophyll-liquid-500-full.webp"
   },
   {
     "num": 32,
@@ -606,7 +606,7 @@ window.ECOVITA_PRODUCTS = [
     "usage_uz": "Qadoqdagi yo‘riqnomaga amal qiling va yetarli miqdorda suv iching.",
     "warnings_ru": "Не превышайте рекомендуемую дозировку. При беременности, кормлении грудью, приёме препаратов или наличии заболеваний проконсультируйтесь с врачом.",
     "warnings_uz": "Tavsiya etilgan dozani oshirmang. Homiladorlik, emizish, dori qabul qilish yoki kasalliklar mavjud bo‘lsa, shifokor bilan maslahatlashing.",
-    "image": "assets/products/psyllium-75.png"
+    "image": "assets/products/psyllium-75-full.webp"
   }
 ];
 
