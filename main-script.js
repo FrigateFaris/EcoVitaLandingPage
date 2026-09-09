@@ -643,8 +643,6 @@ if (!isMobileHeroLayout()){
   window.addEventListener('load', preloadAllHeroFrames, {once:true});
 }
 
-function isNarrow(){ return window.innerWidth <= 760 || (window.innerWidth/window.innerHeight) < 0.95; }
-
 function drawFrame(i, force){
   if (!force && i===currentFrame) return;
   currentFrame = i;
@@ -654,18 +652,14 @@ function drawFrame(i, force){
   const iw = frame.width, ih = frame.height;
   ctx.clearRect(0,0,cw,ch);
 
-  if (isNarrow()){
-    ctx.save();
-    ctx.filter = 'blur(24px) brightness(0.55)';
-    const bScale = Math.max(cw/iw, ch/ih)*1.1;
-    ctx.drawImage(frame, (cw-iw*bScale)/2, (ch-ih*bScale)/2, iw*bScale, ih*bScale);
-    ctx.restore();
-    const scale = Math.min(cw/iw, ch/ih)*0.98;
-    ctx.drawImage(frame, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
-  } else {
-    const scale = Math.max(cw/iw, ch/ih);
-    ctx.drawImage(frame, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
-  }
+  // Always cover-fill and crop to fit, same as a plain CSS background-size:cover.
+  // A narrower-but-still-desktop-hero viewport (tablets in portrait, in
+  // particular) used to get a "shrink to fit + blurred pillarbox" treatment
+  // here instead, which left the sharp photo as a small letterboxed strip
+  // swimming in blur — tablets are plenty wide for a normal cropped cover
+  // fill to look intentional, same as it already does on desktop.
+  const scale = Math.max(cw/iw, ch/ih);
+  ctx.drawImage(frame, (cw-iw*scale)/2, (ch-ih*scale)/2, iw*scale, ih*scale);
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -736,6 +730,26 @@ const CONTENT_FADE_END   = 0.90;
 const FOG_START = 0.90; // ...and only once it's fully gone does the smoke begin rising
 const FOG_END = 1.0;
 let autoProductIndex = 0;
+
+// The brand-story content (1998 / "Путь длиной...") is revealed mid-way
+// through the pinned hero scroll (stage 2, once progress passes
+// STAGE_ENTER[2]) rather than living in its own normal-flow section, so a
+// plain #anchor jump can't reach it — a sticky/absolutely positioned
+// element has no single scroll offset the browser could jump to. Scroll to
+// the progress where that stage is confidently active instead.
+const navBrandLink = document.getElementById('nav-brand-link');
+if (navBrandLink){
+  navBrandLink.addEventListener('click', (e)=>{
+    e.preventDefault();
+    if (isMobileHeroLayout()){
+      document.getElementById('brand-story').scrollIntoView({behavior:'smooth'});
+      return;
+    }
+    const scrollable = heroWrapper.offsetHeight - window.innerHeight;
+    const targetProgress = STAGE_ENTER[2] + 0.03;
+    window.scrollTo({ top: heroWrapper.offsetTop + targetProgress * scrollable, behavior:'smooth' });
+  });
+}
 
 const showcaseProducts = {
   ru: [
