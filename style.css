@@ -284,8 +284,16 @@
     /* No box-reflect: a faded mirror copy sitting right below the bottle
        with only a 3px gap reads, at a glance, as one continuous object
        roughly twice as tall as the real bottle — exactly the "stretched"
-       look this was meant to avoid, not a deliberate reflection. */
-    position:relative; height:38vh; max-height:400px; width:auto; margin:0 auto; display:block;
+       look this was meant to avoid, not a deliberate reflection.
+       max-width:none overrides the sitewide `img{max-width:100%}` reset:
+       this image is deliberately sized taller than its narrow text-column
+       parent (.product-showcase is only 20% wide) and meant to overflow
+       it — that reset otherwise caps the width to the column while
+       height:38vh stays independent, visibly squishing the bottle
+       narrower than its real proportions (confirmed: real pixel
+       distortion, not just a layout illusion, at width/height
+       combinations around 950x800). */
+    position:relative; height:38vh; max-height:400px; width:auto; max-width:none; margin:0 auto; display:block;
     filter: brightness(0.94) saturate(1.15) sepia(0.3) hue-rotate(-8deg) contrast(1.05) drop-shadow(0 20px 26px rgba(0,0,0,0.55));
     transition: opacity 0.42s ease, transform 0.42s ease;
   }
@@ -453,7 +461,16 @@
   .callout-vitc { left:max(-77px, calc(-1 * var(--edge))); top:67%; z-index:7; }
   .callout-vitc .callout-line { width:287px; }
 
-  @media (max-width:900px){ .callout{ display:none; } }
+  /* 960px, not 900px: below 960px .hero-bottles/.glass-panel switch to a
+     full-width, flex-centered layout (see the 761-960px bracket further
+     down), so the callouts' left offset is measured from the edge of that
+     full-width box (x=0) rather than from the frame's own centered
+     position. The --edge-based clamp above assumes there's natural margin
+     between the frame and the viewport edge, which isn't true here — it
+     was still clipping the pills off-screen at widths like 955px, in the
+     gap between the old 900px cutoff and this layout's actual 960px
+     boundary. Simplest fix: just don't show them anywhere in that range. */
+  @media (max-width:960px){ .callout{ display:none; } }
 
   /* ---- Moss growing on the glass ---- */
   .moss { position:absolute; z-index:3; pointer-events:none; }
