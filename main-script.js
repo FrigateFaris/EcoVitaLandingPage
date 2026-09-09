@@ -921,6 +921,16 @@ function setHeroStage(s){
   if (s === heroStage) return;
   heroStage = s;
   heroSticky.setAttribute('data-stage', String(s));
+  // Belt-and-suspenders on top of the CSS opacity:0 rule for non-zero
+  // stages: display:none removes the intro content from the render tree
+  // entirely, so there's no compositing/paint window where it can still
+  // show through under the new stage's content. Repeated CSS-transition
+  // tuning (shorter duration, then instant 0s) kept narrowing that window
+  // but apparently never fully closed it on real devices under fast
+  // back-and-forth scrolling -- this removes the possibility outright
+  // instead of racing to be fast enough.
+  heroBottles.style.display = s === 0 ? '' : 'none';
+  heroText.style.display = s === 0 ? '' : 'none';
 }
 
 function onScroll(){
