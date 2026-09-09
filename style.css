@@ -273,7 +273,7 @@
   .history-divider svg { width:16px; height:16px; color:var(--gold); flex-shrink:0; }
   .history-left p {
     position:relative; z-index:1;
-    font-size: clamp(14px, 1.05vw, 16px); line-height:1.7; color: var(--gold);
+    font-size: clamp(15px, 1.15vw, 18px); line-height:1.7; color: var(--gold);
     text-shadow: 0 1px 12px rgba(0,0,0,0.7);
   }
 
@@ -327,7 +327,7 @@
   }
   .product-info p {
     position:relative; z-index:1;
-    font-size: clamp(14px, 1.05vw, 16px); line-height:1.65; color:rgba(255,255,255,0.8);
+    font-size: clamp(15px, 1.15vw, 18px); line-height:1.65; color:rgba(255,255,255,0.8);
     text-shadow: 0 1px 12px rgba(0,0,0,0.6);
     transition: opacity 0.42s ease;
   }
@@ -472,7 +472,7 @@
       backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     }
     .history-left h2 { font-size:27px; }
-    .history-left p, .product-info p { font-size:16px; line-height:1.65; }
+    .history-left p, .product-info p { font-size:18px; line-height:1.65; }
     .history-number { font-size:64px; }
 
     .product-showcase {
@@ -548,24 +548,46 @@
     color:#f4e9d8; background: rgba(8,12,8,0.78);
     border: 1px solid rgba(212,162,76,0.55);
     padding: 11px 22px; border-radius:24px;
+    flex-shrink:0;
   }
-  .callout-line { height:0; border-top:1px dashed rgba(212,162,76,0.75); }
+  /* flex:1 lets the line fill whatever room is left in its .callout-X
+     parent once the (fixed-size) pill and dot are placed — see the width:%
+     given to each .callout-X below for why this needs an explicit
+     container size to have anything to grow into. */
+  .callout-line { height:0; border-top:1px dashed rgba(212,162,76,0.75); flex:1 1 auto; min-width:0; }
   .callout-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px 1px rgba(212,162,76,0.7); flex-shrink:0; }
 
-  /* Omega 3 — fully inside the image, short dashed line reaching left from the bottle */
-  .callout-omega { left:269px; top:30%; z-index:7; }
-  .callout-omega .callout-line { width:50px; }
+  /* Omega 3 — fully inside the image, short dashed line reaching left from
+     the bottle. .bottles-frame scales from ~min(43vw,...) up to 720px
+     across breakpoints, but this used to be a fixed 269px/50px (tuned for
+     that widest ~720px frame) — at any narrower frame the pill and its
+     line ran straight past the frame's actual right edge (confirmed
+     overflowing at a mid desktop width).
+     Each .callout-X now gets an explicit width:calc(<fixed>px + <N>%): %
+     alone doesn't work here since the PILL's own size is fixed (14px
+     text/padding, doesn't scale) while the frame does — a pure % width
+     narrow enough to look right at 720px comes out smaller than the pill
+     itself at a narrow frame, leaving zero room for a line at all. The
+     fixed px part is sized to always fit the (non-scaling) pill + dot;
+     the % part is what actually scales the line with the frame. left/
+     width resolve correctly here because percentages on an ABSOLUTELY
+     POSITIONED element resolve against its containing block — for
+     .callout-X (position:absolute) that's `.glass-panel`, i.e. the frame
+     itself — unlike .callout-line (a flex item), whose own width:% would
+     resolve against its immediate parent .callout-X instead. That's also
+     why .callout-line uses flex:1 rather than a width of its own: once
+     .callout-X has a definite size, the line just grows to fill whatever
+     is left after the (fixed-size) pill and dot. */
+  .callout-omega { left:37%; top:30%; width:calc(110px + 7%); z-index:7; }
   /* Magnesium + B6 — straddles the image's left edge exactly half in / half
      out on wide desktop. But that -81px is relative to .glass-panel, not
      the viewport, and how much room actually exists before the real
      viewport edge shrinks with it (--edge is the hero's own left margin);
      at narrower desktop/tablet widths -81px pushes the pill off-screen
      entirely. Clamp it to never go further left than --edge allows. */
-  .callout-mag { left:max(-81px, calc(-1 * var(--edge))); top:54%; z-index:7; }
-  .callout-mag .callout-line { width:140px; }
+  .callout-mag { left:max(-81px, calc(-1 * var(--edge))); top:54%; width:calc(168px + 19%); z-index:7; }
   /* Vitamin C-500 — same edge-straddling treatment, same clamp */
-  .callout-vitc { left:max(-77px, calc(-1 * var(--edge))); top:67%; z-index:7; }
-  .callout-vitc .callout-line { width:287px; }
+  .callout-vitc { left:max(-77px, calc(-1 * var(--edge))); top:67%; width:calc(160px + 40%); z-index:7; }
 
   /* 960px, not 900px: below 960px .hero-bottles/.glass-panel switch to a
      full-width, flex-centered layout (see the 761-960px bracket further
