@@ -183,8 +183,15 @@
      gets the fuller fade-in from the base rules. Keeping this well under
      the entrance's ~1s duration is what actually prevents the overlap
      above, not just "shorter than before". */
-  .hero-sticky:not([data-stage="0"]) .hero-text { opacity:0; filter:blur(10px); transform:translateY(-52%) translateY(-18px); pointer-events:none; transition-duration:0.12s; }
-  .hero-sticky:not([data-stage="0"]) .hero-bottles { opacity:0; filter:blur(10px); transform:scale(0.97); pointer-events:none; transition-duration:0.12s; }
+  /* Instant (0s), not just fast: a short-but-nonzero duration still leaves
+     a real window where the old content is mid-fade (still at least
+     partly opaque) while new content fades in — narrow, but scrolling
+     down/up/down again repeatedly (retriggering this transition mid-flight
+     each time) can catch it there, which is exactly the double-exposure
+     this was meant to fix. There's no meaningful loss going instant: this
+     content is about to be scrolled past anyway. */
+  .hero-sticky:not([data-stage="0"]) .hero-text { opacity:0; filter:blur(10px); transform:translateY(-52%) translateY(-18px); pointer-events:none; transition-duration:0s; }
+  .hero-sticky:not([data-stage="0"]) .hero-bottles { opacity:0; filter:blur(10px); transform:scale(0.97); pointer-events:none; transition-duration:0s; }
 
   /* ================= History section: staged reveal — left text, then right text, then product ================= */
   .history-wrap { position:absolute; inset:0; z-index:6; }
@@ -369,7 +376,17 @@
     box-shadow: 0 0 8px 2px rgba(212,162,76,0.8);
   }
 
-  @media (max-width:900px){
+  /* 960px, not 900px: this is the boundary the hero itself switches on
+     (isMobileHeroLayout() and the 761-960px "vertical hero" bracket further
+     down both use it). The old 900px cutoff here left a real 901-960px gap
+     where the hero was already in its narrow vertical mode but this
+     section still tried to fit .history-left text + a 38vh-tall bottle
+     image + a fixed max-width:380px .product-info side by side — not
+     enough room, so the bottle image ran straight into the info text
+     (confirmed: -100px+ overlap at 908px). Below is the layout that
+     already handles narrow widths correctly (stacked, one column) —
+     it just wasn't reaching far enough. */
+  @media (max-width:960px){
     .history-container { position:static; max-width:none; padding:0; transform:none; }
     .history-wrap {
       position:absolute; inset:0; overflow-y:auto;
