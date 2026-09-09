@@ -634,10 +634,12 @@ function preloadAllHeroFrames(){
   for (let w=0; w<HERO_PRELOAD_CONCURRENCY; w++) worker();
 }
 
-/* Phones get a plain CSS background photo instead of the scroll scrub (see
-   the ≤760px CSS block) — the canvas is hidden there, so skip loading
-   frames for it entirely. */
-function isMobileHeroLayout(){ return window.innerWidth <= 760; }
+/* Phones AND narrow tablets get a plain CSS background photo instead of
+   the scroll scrub (see the ≤960px CSS block) — the canvas is hidden
+   there, so skip loading frames for it entirely. 960px, not 760px:
+   below that the hero unpins into normal page flow, which a live
+   scroll-scrub canvas has nothing meaningful to sync against. */
+function isMobileHeroLayout(){ return window.innerWidth <= 960; }
 if (!isMobileHeroLayout()){
   for (let i=0;i<10;i++) loadFrame(i);
   window.addEventListener('load', preloadAllHeroFrames, {once:true});
