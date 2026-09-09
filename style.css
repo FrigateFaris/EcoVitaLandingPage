@@ -458,9 +458,16 @@
        product-description paragraphs sized up (13px -> 16px): against a
        busy forest photo the old, lighter cards left the text hard to
        read at a glance — this was a direct request, independent of the
-       layout-overlap fix above. */
+       layout-overlap fix above.
+       width/max-width reset to auto/none on all four: their base
+       (desktop, pinned-hero) rules give each a DIFFERENT width — 460px,
+       20%, 380px, and unconstrained respectively, sized for floating
+       independently over the photo at fixed positions. Stacked in normal
+       flow without resetting that, each card ends up a different width
+       instead of a uniform column (confirmed: 220px / 410px / full-width
+       for showcase/info/tabs at ~1055px). */
     .history-left {
-      padding:26px 22px; margin-bottom:34px;
+      width:auto; max-width:none; padding:26px 22px; margin-bottom:34px;
       background:rgba(9,15,9,.84); border:1px solid rgba(212,162,76,.18); border-radius:20px;
       backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     }
@@ -469,15 +476,15 @@
     .history-number { font-size:64px; }
 
     .product-showcase {
-      margin-bottom:0; padding:28px 20px 4px;
+      width:auto; max-width:none; margin-bottom:0; padding:28px 20px 4px;
       background:rgba(9,15,9,.84); border:1px solid rgba(212,162,76,.18); border-bottom:0; border-radius:20px 20px 0 0;
     }
     .product-info {
-      margin-bottom:0; padding:4px 22px 12px;
+      width:auto; max-width:none; margin-bottom:0; padding:4px 22px 12px;
       background:rgba(9,15,9,.84); border-left:1px solid rgba(212,162,76,.18); border-right:1px solid rgba(212,162,76,.18);
     }
     .product-tabs {
-      margin-bottom:34px; padding:14px 20px 22px; justify-content:center;
+      width:auto; margin-bottom:34px; padding:14px 20px 22px; justify-content:center;
       background:rgba(9,15,9,.84); border:1px solid rgba(212,162,76,.18); border-top:0; border-radius:0 0 20px 20px;
     }
     .product-bottle-wrap img { height:24svh; }
