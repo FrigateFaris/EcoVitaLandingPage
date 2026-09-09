@@ -242,9 +242,15 @@
   .hero-sticky[data-stage="4"] .product-tabs { opacity:1; filter:blur(0); transform:translateY(0); pointer-events:auto; }
 
   .history-left { left:0; top:18%; max-width:460px; padding:36px 40px; }
+  /* Darkened and extended (was .82/.55 alpha fading out by 74% radius) --
+     against a busy, variably-lit forest frame the old glow often wasn't
+     dark or wide enough to keep text reliably legible; this keeps
+     meaningful contrast under the text without hard-edging into an
+     actual card (mobile gets real cards further down; desktop keeps the
+     lighter floating-over-the-photo look, just with a stronger halo). */
   .history-left::before, .product-info::before, .product-showcase::before, .product-tabs::before {
     content:''; position:absolute; inset:-44px; z-index:-1;
-    background: radial-gradient(ellipse at center, rgba(2,3,2,0.82) 0%, rgba(3,5,3,0.55) 42%, rgba(3,5,3,0) 74%);
+    background: radial-gradient(ellipse at center, rgba(2,3,2,0.94) 0%, rgba(3,5,3,0.8) 50%, rgba(3,5,3,0) 88%);
     filter: blur(32px);
   }
   .history-left h2 {
