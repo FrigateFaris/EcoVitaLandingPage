@@ -163,17 +163,28 @@
   }
 
   /* ---- Phase transition: intro fades out, history content fades in ----
-     Deliberately shorter than the .history-left/.product-info fade-in
-     (~1s) below: on a fast scroll/flick, data-stage can jump straight from
-     0 to 2+ in a single tick, starting both transitions at once. If this
-     exit took as long as that entrance, the old intro content would still
-     be visibly fading out while the new content was already fading in —
-     a jarring double-exposure overlap. Clearing it quickly avoids that. */
-  .hero-text, .hero-bottles {
+     .hero-bottles has its own base transition further down (with the
+     positioning rule) which wins the cascade for it — same specificity,
+     later in the file — so only .hero-text is actually controlled here;
+     don't be misled into thinking this also governs .hero-bottles' timing.
+     Both base transitions are intentionally shorter than the
+     .history-left/.product-info fade-in (~1s) below: on a fast scroll/
+     flick, data-stage can jump straight from 0 to 2+ in a single tick,
+     starting both transitions at once. If this exit took as long as that
+     entrance, the old intro content would still be visibly fading out
+     while the new content was already fading in — a jarring
+     double-exposure overlap. Clearing it quickly avoids that. */
+  .hero-text {
     transition: opacity 0.4s cubic-bezier(.4,0,.2,1), filter 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1);
   }
-  .hero-sticky:not([data-stage="0"]) .hero-text { opacity:0; filter:blur(10px); transform:translateY(-52%) translateY(-18px); pointer-events:none; }
-  .hero-sticky:not([data-stage="0"]) .hero-bottles { opacity:0; filter:blur(10px); transform:scale(0.97); pointer-events:none; }
+  /* transition-duration overridden here (not just above): a CSS transition
+     uses whichever `transition` is in effect on the element's TARGET state,
+     so this makes only the exit fast — scrolling back up to stage 0 still
+     gets the fuller fade-in from the base rules. Keeping this well under
+     the entrance's ~1s duration is what actually prevents the overlap
+     above, not just "shorter than before". */
+  .hero-sticky:not([data-stage="0"]) .hero-text { opacity:0; filter:blur(10px); transform:translateY(-52%) translateY(-18px); pointer-events:none; transition-duration:0.12s; }
+  .hero-sticky:not([data-stage="0"]) .hero-bottles { opacity:0; filter:blur(10px); transform:scale(0.97); pointer-events:none; transition-duration:0.12s; }
 
   /* ================= History section: staged reveal — left text, then right text, then product ================= */
   .history-wrap { position:absolute; inset:0; z-index:6; }
@@ -270,9 +281,12 @@
     animation: glow-breathe 5s ease-in-out infinite;
   }
   .product-bottle-wrap img {
+    /* No box-reflect: a faded mirror copy sitting right below the bottle
+       with only a 3px gap reads, at a glance, as one continuous object
+       roughly twice as tall as the real bottle — exactly the "stretched"
+       look this was meant to avoid, not a deliberate reflection. */
     position:relative; height:38vh; max-height:400px; width:auto; margin:0 auto; display:block;
     filter: brightness(0.94) saturate(1.15) sepia(0.3) hue-rotate(-8deg) contrast(1.05) drop-shadow(0 20px 26px rgba(0,0,0,0.55));
-    -webkit-box-reflect: below 3px linear-gradient(transparent 60%, rgba(255,255,255,0.16));
     transition: opacity 0.42s ease, transform 0.42s ease;
   }
 
@@ -364,7 +378,12 @@
     .history-timeline { position:static; order:6; }
   }
 
-  .hero-bottles { position:absolute; z-index:4; left:var(--edge); bottom:7%; perspective: 1400px; transition: transform 0.25s ease-out, opacity 1.1s cubic-bezier(.4,0,.2,1), filter 1.1s cubic-bezier(.4,0,.2,1); transform-style: preserve-3d; }
+  /* This rule's own opacity/filter timings (not the "phase transition"
+     block above) are what actually win the cascade for .hero-bottles —
+     same specificity, later in the file — so they have to match the
+     fast/instant-hide design there too, or the stage-exit fade silently
+     reverts to the old slow 1.1s and the overlap bug comes right back. */
+  .hero-bottles { position:absolute; z-index:4; left:var(--edge); bottom:7%; perspective: 1400px; transition: transform 0.25s ease-out, opacity 0.4s cubic-bezier(.4,0,.2,1), filter 0.4s cubic-bezier(.4,0,.2,1); transform-style: preserve-3d; }
 
   /* ---- Ambient glow behind the glass panel ---- */
   .panel-glow {
@@ -992,7 +1011,7 @@
     .hero-text.visible { transform:none; }
     .hero-bottles { top:max(74px,9svh); right:0; left:0; bottom:auto; display:flex; justify-content:center; }
     .glass-panel { width:100%; padding:0; justify-content:center; }
-    .bottles-frame { width:min(42vw,32svh,340px); height:auto; max-width:none; aspect-ratio:1; }
+    .bottles-frame { width:min(50vw,40svh,440px); height:auto; max-width:none; aspect-ratio:1; }
     .hero-text h1 { font-size:clamp(32px,5vw,44px); margin-bottom:16px; }
     .hero-text p { font-size:14.5px; line-height:1.55; }
     .history-wrap { padding-left:7%; padding-right:7%; }
